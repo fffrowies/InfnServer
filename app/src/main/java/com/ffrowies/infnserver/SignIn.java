@@ -1,6 +1,7 @@
 package com.ffrowies.infnserver;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,10 +69,9 @@ public class SignIn extends AppCompatActivity {
                                 {
                                     Log.d(TAG, "onDataChange: We're In!!!");
 
-//                                    Intent homeIntent = new Intent(SignIn.this, Home.class);
-//                                    Common.currentUser = user;
-//                                    startActivity(homeIntent);
-//                                    finish();
+                                    Intent intent = new Intent(SignIn.this, CustomersList.class);
+                                    startActivity(intent);
+                                    finish();
                                 }
                                 else
                                 {

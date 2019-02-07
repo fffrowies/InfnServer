@@ -1,48 +1,75 @@
 package com.ffrowies.infnserver.Models;
 
 public class User {
-    private String Name;
-    private String Password;
-    private String Phone;
-    private String IsStaff;
+    private String name;
+    private String password;
+    private String phone;
+    private String email;
+    private String address;
+    private String isStaff;
 
     public User() {
     }
 
     public User(String name, String password) {
-        Name = name;
-        Password = password;
+        this.name = name;
+        this.password = password;
+    }
+
+    public User(String name, String password, String phone, String email, String address, String isStaff) {
+        this.name = name;
+        this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.address = address;
+        this.isStaff = isStaff;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
     public String getPhone() {
-        return Phone;
+        return phone;
     }
 
     public void setPhone(String phone) {
-        Phone = phone;
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getIsStaff() {
-        return IsStaff;
+        return isStaff;
     }
 
     public void setIsStaff(String isStaff) {
-        IsStaff = isStaff;
+        this.isStaff = isStaff;
     }
 }

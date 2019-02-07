@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">InfnServer</string>
+    <string name="about_dev">Development: Fernando Rowies, fernandorowies.saxo@gmail.com 4282-3000 11-5849-8374</string>
+    <string name="sign_in">Sign In</string>
 </resources>

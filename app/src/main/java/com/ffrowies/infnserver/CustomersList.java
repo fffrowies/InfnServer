@@ -2,6 +2,7 @@ package com.ffrowies.infnserver;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.ffrowies.infnserver.Interface.ItemClickListener;
 import com.ffrowies.infnserver.Models.User;
@@ -30,6 +32,8 @@ public class CustomersList extends AppCompatActivity {
     DatabaseReference customersList;
     FirebaseRecyclerAdapter<User, CustomerViewHolder> adapter;
 
+    User newCustomer;
+
     //Add New Product Layout
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
 
@@ -37,6 +41,14 @@ public class CustomersList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers_list);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddCustomerDialog();
+            }
+        });
 
         //Firebase
         db = FirebaseDatabase.getInstance();
@@ -75,6 +87,56 @@ public class CustomersList extends AppCompatActivity {
         };
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
+    }
+
+    private void showAddCustomerDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomersList.this);
+        alertDialog.setTitle("Add new Customer");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_customer_layout = inflater.inflate(R.layout.add_new_customer, null);
+
+        edtName = (MaterialEditText) add_customer_layout.findViewById(R.id.edtName);
+        edtAddress = (MaterialEditText) add_customer_layout.findViewById(R.id.edtAddress);
+        edtEmail = (MaterialEditText) add_customer_layout.findViewById(R.id.edtEmail);
+        edtPhone = (MaterialEditText) add_customer_layout.findViewById(R.id.edtPhone);
+
+        alertDialog.setView(add_customer_layout);
+        alertDialog.setIcon(R.drawable.ic_person_add_black_24dp);
+
+        //Set button
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                newCustomer = new User();
+                newCustomer.setName(edtName.getText().toString());
+                newCustomer.setAddress(edtAddress.getText().toString());
+                newCustomer.setEmail(edtEmail.getText().toString());
+                newCustomer.setPhone(edtPhone.getText().toString());
+                newCustomer.setPhone(edtPhone.getText().toString());
+                newCustomer.setPassword(edtPhone.getText().toString());  // until Client side
+                newCustomer.setIsStaff("false");
+
+                dialog.dismiss();
+
+                //Create new Product
+                if (newCustomer != null)
+                {
+                    customersList.push().setValue(newCustomer);
+                    Toast.makeText(CustomersList.this, "New customer "+newCustomer.getName()+" was added", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
     }
 
     @Override
@@ -132,6 +194,7 @@ public class CustomersList extends AppCompatActivity {
                 item.setPhone(edtPhone.getText().toString());
 
                 customersList.child(key).setValue(item);
+                Toast.makeText(CustomersList.this, "Customer "+item.getName()+" was updated", Toast.LENGTH_SHORT).show();
             }
         });
         alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

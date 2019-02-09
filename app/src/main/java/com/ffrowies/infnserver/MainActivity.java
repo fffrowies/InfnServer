@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-import info.hoang8f.widget.FButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    FButton btnSignIn;
+    Button btnSignIn;
     TextView txvAboutDev;
 
     @Override
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnSignIn = (FButton) findViewById(R.id.btnSignIn);
+        btnSignIn = (Button) findViewById(R.id.btnSignIn);
         txvAboutDev = (TextView) findViewById(R.id.txvAboutDev);
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {

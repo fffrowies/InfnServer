@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,12 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import info.hoang8f.widget.FButton;
-
 public class SignIn extends AppCompatActivity {
 
     EditText edtPhone, edtPassword;
-    FButton btnSignIn;
+    Button btnSignIn;
 
     private static final String TAG = "SignIn";
 
@@ -34,8 +33,7 @@ public class SignIn extends AppCompatActivity {
 
         edtPassword = (MaterialEditText) findViewById(R.id.edtPassword);
         edtPhone = (MaterialEditText) findViewById(R.id.edtPhone);
-
-        btnSignIn = (FButton) findViewById(R.id.btnSignIn);
+        btnSignIn = (Button) findViewById(R.id.btnSignIn);
 
         //Init Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();

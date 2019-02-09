@@ -117,9 +117,6 @@ public class AddCustomers extends AppCompatActivity {
 
             }
         });
-
-        // Database reference
-//        database = new Database(this);
     }
 
     private boolean isValidName(String name) {

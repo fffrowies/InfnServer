@@ -11,8 +11,7 @@ import com.ffrowies.infnserver.R;
 import com.ffrowies.infnserver.Utils.Common;
 
 public class CustomerViewHolder extends RecyclerView.ViewHolder implements
-        View.OnClickListener,
-        View.OnCreateContextMenuListener {
+        View.OnClickListener {
 
     public TextView txvName, txvEmail, txvPhone, txvAddress;
 
@@ -31,18 +30,10 @@ public class CustomerViewHolder extends RecyclerView.ViewHolder implements
         txvAddress = (TextView) itemView.findViewById(R.id.txvAddress);
 
         itemView.setOnClickListener(this);
-        itemView.setOnCreateContextMenuListener(this);
     }
 
     @Override
     public void onClick(View view) {
         itemClickListener.onClick(view, getAdapterPosition(), false);
-    }
-
-    public void onCreateContextMenu(ContextMenu contextMenu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        contextMenu.setHeaderTitle("Select the action");
-
-        contextMenu.add(0, 0, getAdapterPosition(), Common.UPDATE);
-        contextMenu.add(0, 1, getAdapterPosition(), Common.DELETE);
     }
 }

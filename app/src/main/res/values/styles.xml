@@ -17,4 +17,15 @@
         <item name="android:textColor">#DA380A</item>
     </style>
 
+    <style name="CollapsedAppbar" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="ExpandedAppbar" parent="@android:style/TextAppearance.Material.Title">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
 </resources>

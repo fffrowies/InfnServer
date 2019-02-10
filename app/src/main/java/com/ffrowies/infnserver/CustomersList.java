@@ -1,8 +1,12 @@
 package com.ffrowies.infnserver;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,53 +17,74 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.ffrowies.infnserver.Interface.ItemClickListener;
-import com.ffrowies.infnserver.Models.User;
+import com.ffrowies.infnserver.Models.Customers;
+import com.ffrowies.infnserver.Utils.Common;
 import com.ffrowies.infnserver.ViewHolder.CustomerViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.picasso.Picasso;
+
+import org.apache.commons.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class CustomersList extends AppCompatActivity {
 
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
 
+    FloatingActionButton fab;
+
     //Firebase
     FirebaseDatabase db;
     DatabaseReference customersList;
-    FirebaseRecyclerAdapter<User, CustomerViewHolder> adapter;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    FirebaseRecyclerAdapter<Customers, CustomerViewHolder> adapter;
 
-    User newCustomer;
+    Customers newCustomer;
 
-    //Add New Product Layout
+    //Add New Customer Layout
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
+    RoundedImageView rivCustomer;
+    Button btnSelect, btnUpload;
 
     //Search functionality
-    FirebaseRecyclerAdapter<User, CustomerViewHolder> searchAdapter;
+    FirebaseRecyclerAdapter<Customers, CustomerViewHolder> searchAdapter;
 
     List<String> suggestList = new ArrayList<String>();
     MaterialSearchBar materialSearchBar;
 
     Date date = new Date();
 
+    Uri saveUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customers_list);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,13 +94,17 @@ public class CustomersList extends AppCompatActivity {
 
         //Firebase
         db = FirebaseDatabase.getInstance();
-        customersList = db.getReference("User");
+        customersList = db.getReference("Customers");
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         //Init
         recyclerView = (RecyclerView) findViewById(R.id.recyclerCustomer);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        rivCustomer = new RoundedImageView(CustomersList.this);
 
         loadCustomersList();
 
@@ -135,24 +164,32 @@ public class CustomersList extends AppCompatActivity {
     }
 
     private void startSearch(CharSequence text) {
-        searchAdapter = new FirebaseRecyclerAdapter<User, CustomerViewHolder>(
-                User.class,
+        searchAdapter = new FirebaseRecyclerAdapter<Customers, CustomerViewHolder>(
+                Customers.class,
                 R.layout.layout_customer_item,
                 CustomerViewHolder.class,
                 customersList.orderByChild("name").equalTo(text.toString())     //Compare name
         ) {
             @Override
-            protected void populateViewHolder(CustomerViewHolder viewHolder, User model, int position) {
+            protected void populateViewHolder(CustomerViewHolder viewHolder, Customers model, int position) {
                 viewHolder.txvName.setText(model.getName());
                 viewHolder.txvEmail.setText(model.getEmail());
                 viewHolder.txvPhone.setText(model.getPhone());
                 viewHolder.txvAddress.setText(model.getAddress());
 
-                final User local = model;
+                Picasso.with(getBaseContext())
+                        .load(model.getImage())
+                        .into(viewHolder.rivCustomer);
+
+                final Customers local = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(CustomersList.this, "" + local.getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CustomersList.this, "(2) " + local.getName(), Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(CustomersList.this, CustomerDetail.class);
+                        intent.putExtra("CustomerId", adapter.getRef(position).getKey());
+                        startActivity(intent);
                     }
                 });
             }
@@ -167,7 +204,7 @@ public class CustomersList extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot postSnapshot:dataSnapshot.getChildren())
                         {
-                            User item = postSnapshot.getValue(User.class);
+                            Customers item = postSnapshot.getValue(Customers.class);
 
                             suggestList.add(item.getName());        //Add name of customer/user
                         }
@@ -181,23 +218,32 @@ public class CustomersList extends AppCompatActivity {
     }
 
     private void loadCustomersList() {
-        adapter = new FirebaseRecyclerAdapter<User, CustomerViewHolder>(
-        User.class,
+        adapter = new FirebaseRecyclerAdapter<Customers, CustomerViewHolder>(
+        Customers.class,
         R.layout.layout_customer_item,
         CustomerViewHolder.class,
         customersList.orderByChild("name")  //TODO filter isStaff false
         ) {
             @Override
-            protected void populateViewHolder(CustomerViewHolder viewHolder, User model, int position) {
+            protected void populateViewHolder(CustomerViewHolder viewHolder, Customers model, int position) {
                 viewHolder.txvName.setText(model.getName());
                 viewHolder.txvEmail.setText(model.getEmail());
                 viewHolder.txvPhone.setText(model.getPhone());
                 viewHolder.txvAddress.setText(model.getAddress());
 
+                Picasso.with(getBaseContext())
+                        .load(model.getImage())
+                        .into(viewHolder.rivCustomer);
+
+                final Customers local = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        //Code late
+                        Toast.makeText(CustomersList.this, "(1) " + local.getName(), Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(CustomersList.this, CustomerDetail.class);
+                        intent.putExtra("CustomerId", adapter.getRef(position).getKey());
+                        startActivity(intent);
                     }
                 });
             }
@@ -218,6 +264,23 @@ public class CustomersList extends AppCompatActivity {
         edtAddress = (MaterialEditText) add_customer_layout.findViewById(R.id.edtAddress);
         edtEmail = (MaterialEditText) add_customer_layout.findViewById(R.id.edtEmail);
         edtPhone = (MaterialEditText) add_customer_layout.findViewById(R.id.edtPhone);
+        btnSelect = (Button) add_customer_layout.findViewById(R.id.btnSelect);
+        btnUpload = (Button) add_customer_layout.findViewById(R.id.btnUpload);
+
+        //Event for button
+        btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseImage();  //user select from gallery and save Uri of this image
+            }
+        });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadImage();
+            }
+        });
 
         alertDialog.setView(add_customer_layout);
         alertDialog.setIcon(R.drawable.ic_person_add_black_24dp);
@@ -227,20 +290,9 @@ public class CustomersList extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                newCustomer = new User();
-
-                newCustomer.setId(Long.toString(date.getTime()));
-                newCustomer.setName(edtName.getText().toString());
-                newCustomer.setAddress(edtAddress.getText().toString());
-                newCustomer.setEmail(edtEmail.getText().toString());
-                newCustomer.setPhone(edtPhone.getText().toString());
-                newCustomer.setPhone(edtPhone.getText().toString());
-                newCustomer.setPassword(edtPhone.getText().toString());  // until Client side
-                newCustomer.setIsStaff("false");
-
                 dialog.dismiss();
 
-                //Create new Product
+                //Create new Customer
                 if (newCustomer != null)
                 {
                     customersList.push().setValue(newCustomer);
@@ -255,6 +307,77 @@ public class CustomersList extends AppCompatActivity {
             }
         });
         alertDialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Common.PICK_IMAGE_REQUEST
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null)
+        {
+            saveUri = data.getData();
+            btnSelect.setText("Selected !!!");
+            btnSelect.setTextColor(Color.parseColor("#06A20D"));
+        }
+    }
+
+    private void chooseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Common.PICK_IMAGE_REQUEST);
+    }
+
+    private void uploadImage() {
+
+        if (saveUri != null)
+        {
+            final ProgressDialog mDialog = new ProgressDialog(CustomersList.this);
+            mDialog.setMessage("Uploading...");
+            mDialog.show();
+
+            String imageName = UUID.randomUUID().toString();
+            final StorageReference imageFolder = storageReference.child("images/" + imageName);
+            imageFolder.putFile(saveUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            mDialog.dismiss();
+                            Toast.makeText(CustomersList.this, "Uploaded!!!", Toast.LENGTH_SHORT).show();
+
+                            imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    //set value for new customer if image upload and we can get download link
+                                    newCustomer = new Customers();
+
+                                    newCustomer.setId(Long.toString(date.getTime()));
+                                    newCustomer.setName(WordUtils.capitalizeFully(edtName.getText().toString()));
+                                    newCustomer.setAddress(WordUtils.capitalizeFully(edtAddress.getText().toString()));
+                                    newCustomer.setEmail(edtEmail.getText().toString());
+                                    newCustomer.setPhone(edtPhone.getText().toString());
+                                    newCustomer.setImage(uri.toString());
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            mDialog.dismiss();
+                            Toast.makeText(CustomersList.this, "ERROR " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            mDialog.setMessage("Uploaded " + progress + "%");
+                        }
+                    });
+        }
     }
 
 //    @Override

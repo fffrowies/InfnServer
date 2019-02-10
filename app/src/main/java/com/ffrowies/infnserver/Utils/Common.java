@@ -1,10 +1,9 @@
 package com.ffrowies.infnserver.Utils;
 
-import com.ffrowies.infnserver.Models.User;
+import com.ffrowies.infnserver.Models.Staff;
 
 public class Common {
-    public static User currentUser;
+    public static Staff currentStaffUser;
 
-    public static final String UPDATE = "Update";
-    public static final String DELETE = "Delete";
+    public static final int PICK_IMAGE_REQUEST = 71;  //any number, just must coincide when used
 }

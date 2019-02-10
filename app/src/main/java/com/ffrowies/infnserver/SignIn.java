@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.ffrowies.infnserver.Models.User;
+import com.ffrowies.infnserver.Models.Staff;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,8 +36,8 @@ public class SignIn extends AppCompatActivity {
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
 
         //Init Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference table_user = database.getReference("User");
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        final DatabaseReference tableStaff = db.getReference("Staff");
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
 
@@ -48,7 +48,7 @@ public class SignIn extends AppCompatActivity {
                 mDialog.setMessage("Please waiting...");
                 mDialog.show();
 
-                table_user.addValueEventListener(new ValueEventListener() {
+                tableStaff.addValueEventListener(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -59,32 +59,26 @@ public class SignIn extends AppCompatActivity {
                             mDialog.dismiss();
 
                             //Get user information
-                            User user = dataSnapshot.child(edtPhone.getText().toString()).getValue(User.class);
-                            user.setPhone(edtPhone.getText().toString());
-                            if (Boolean.parseBoolean(user.getIsStaff()))
-                            {
-                                if (user.getPassword().equals(edtPassword.getText().toString()))
-                                {
-                                    Log.d(TAG, "onDataChange: We're In!!!");
+                            Staff staffUser = dataSnapshot.child(edtPhone.getText().toString()).getValue(Staff.class);
+                            staffUser.setPhone(edtPhone.getText().toString());
 
-                                    Intent intent = new Intent(SignIn.this, CustomersList.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                else
-                                {
-                                    Toast.makeText(SignIn.this, "Wrong Password !!!", Toast.LENGTH_SHORT).show();
-                                }
+                            if (staffUser.getPassword().equals(edtPassword.getText().toString()))
+                            {
+                                Log.d(TAG, "onDataChange: We're In!!!");
+
+                                Intent intent = new Intent(SignIn.this, CustomersList.class);
+                                startActivity(intent);
+                                finish();
                             }
                             else
                             {
-                                Toast.makeText(SignIn.this, "Staff account required", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignIn.this, "Wrong Password !!!", Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
                         {
                             mDialog.dismiss();
-                            Toast.makeText(SignIn.this, "User not exist in Database", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignIn.this, "Staff user not exist in Database", Toast.LENGTH_SHORT).show();
                         }
                     }
 

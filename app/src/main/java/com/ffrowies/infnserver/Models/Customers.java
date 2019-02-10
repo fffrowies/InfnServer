@@ -1,30 +1,27 @@
 package com.ffrowies.infnserver.Models;
 
-public class User {
+public class Customers {
     private String id;
     private String name;
-    private String password;
     private String phone;
     private String email;
     private String address;
-    private String isStaff;
+    private String image;
 
-    public User() {
+    public Customers() {
     }
 
-    public User(String name, String password) {
+    public Customers(String name, String image) {
         this.name = name;
-        this.password = password;
+        this.image = image;
     }
 
-    public User(String id, String name, String password, String phone, String email, String address, String isStaff) {
+    public Customers(String id, String name, String phone, String email, String address) {
         this.id = id;
         this.name = name;
-        this.password = password;
         this.phone = phone;
         this.email = email;
         this.address = address;
-        this.isStaff = isStaff;
     }
 
     public String getId() {
@@ -41,14 +38,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getPhone() {
@@ -75,11 +64,11 @@ public class User {
         this.address = address;
     }
 
-    public String getIsStaff() {
-        return isStaff;
+    public String getImage() {
+        return image;
     }
 
-    public void setIsStaff(String isStaff) {
-        this.isStaff = isStaff;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

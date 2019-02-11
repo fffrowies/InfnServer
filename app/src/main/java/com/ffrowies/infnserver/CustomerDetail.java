@@ -1,6 +1,7 @@
 package com.ffrowies.infnserver;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView;
 import com.ffrowies.infnserver.Models.Customers;
 import com.ffrowies.infnserver.Utils.Common;
 import com.google.firebase.database.DataSnapshot;
@@ -36,8 +38,9 @@ public class CustomerDetail extends AppCompatActivity {
     DatabaseReference customers;
     
     String customerId;
-
     Customers currentCustomer;
+
+    HorizontalScrollMenuView menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,8 @@ public class CustomerDetail extends AppCompatActivity {
 
         btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
 
+        menu = (HorizontalScrollMenuView) findViewById(R.id.menu);
+
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppbar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppbar);
@@ -63,10 +68,7 @@ public class CustomerDetail extends AppCompatActivity {
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = deleteCustomer();
-                Toast.makeText(CustomerDetail.this, "Customer " + name + " was deleted", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CustomerDetail.this, CustomersList.class);
-                startActivity(intent);
+
             }
         });
 
@@ -78,6 +80,84 @@ public class CustomerDetail extends AppCompatActivity {
         {
             getDetailCustomer();
         }
+
+        //Create menu
+        initMenu();
+    }
+
+    private void initMenu() {
+        menu.addItem("Customers", R.drawable.ic_contacts_black_24dp);
+        menu.addItem("Account", R.drawable.ic_attach_money_black_24dp);
+        menu.addItem("Cart", R.drawable.ic_shopping_cart_black_24dp);
+        menu.addItem("Whatsapp", R.drawable.ic_iconfinder_whatsapp_115679);
+        menu.addItem("Call", R.drawable.ic_phone_black_24dp);
+        menu.addItem("SMS", R.drawable.ic_sms_black_24dp);
+        menu.addItem("Update", R.drawable.ic_person_outline_black_24dp);
+        menu.addItem("Delete", R.drawable.ic_delete_black_24dp);
+        menu.addItem("Exit", R.drawable.ic_exit_to_app_black_24dp);
+
+        menu.setOnHSMenuClickListener(new HorizontalScrollMenuView.OnHSMenuClickListener() {
+            @Override
+            public void onHSMClick(com.darwindeveloper.horizontalscrollmenulibrary.extras.MenuItem menuItem, int position) {
+                Toast.makeText(CustomerDetail.this, ""+menuItem.getText(), Toast.LENGTH_SHORT).show();
+
+                String phone = ((TextView) findViewById(R.id.txvCustomerPhone)).getText().toString();
+
+                switch (position)
+                {
+                    case 0:
+                        //Customers
+                        Intent intentCustomersList = new Intent(CustomerDetail.this, CustomersList.class);
+                        startActivity(intentCustomersList);
+                        break;
+                    case 1:
+                        //TODO Account
+                        break;
+                    case 2:
+                        //TODO Cart
+                        break;
+                    case 3:
+                        //TODO test Whatsapp
+                        openWhatsappContact(phone);
+                        break;
+                    case 4:
+                        //Phone Call
+                        Intent intentCall = new Intent(
+                                Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                        startActivity(intentCall);
+                        break;
+                    case 5:
+                        //TODO SMS
+                        break;
+                    case 6:
+                        //TODO Email
+                        break;
+                    case 7:
+                        //TODO Update
+                        break;
+                    case 8:
+                        //Delete
+                        String name = deleteCustomer();
+                        Toast.makeText(CustomerDetail.this, "Customer " + name + " was deleted", Toast.LENGTH_SHORT).show();
+                        Intent intentDeleted = new Intent(CustomerDetail.this, CustomersList.class);
+                        startActivity(intentDeleted);
+                        break;
+                    case 9:
+                        //Exit
+                        Intent intentExit = new Intent(CustomerDetail.this, MainActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intentExit);
+                        break;
+                }
+            }
+        });
+    }
+
+    private void openWhatsappContact(String number) {
+        Uri uri = Uri.parse("smsto:" + number);
+        Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+        i.setPackage("com.whatsapp");
+        startActivity(Intent.createChooser(i, ""));
     }
 
     private void getDetailCustomer() {
@@ -115,7 +195,7 @@ public class CustomerDetail extends AppCompatActivity {
         }
         else if (item.getTitle().equals(Common.DELETE))
         {
-//            deleteCustomer();
+
         }
 
         return super.onContextItemSelected(item);

@@ -6,4 +6,7 @@ public class Common {
     public static Staff currentStaffUser;
 
     public static final int PICK_IMAGE_REQUEST = 71;  //any number, just must coincide when used
+
+    public static final String UPDATE = "Update";
+    public static final String DELETE = "Delete";
 }

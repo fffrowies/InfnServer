@@ -185,10 +185,8 @@ public class CustomersList extends AppCompatActivity {
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(CustomersList.this, "(2) " + local.getName(), Toast.LENGTH_SHORT).show();
-
                         Intent intent = new Intent(CustomersList.this, CustomerDetail.class);
-                        intent.putExtra("CustomerId", adapter.getRef(position).getKey());
+                        intent.putExtra("CustomerId", local.getId());
                         startActivity(intent);
                     }
                 });
@@ -222,7 +220,7 @@ public class CustomersList extends AppCompatActivity {
         Customers.class,
         R.layout.layout_customer_item,
         CustomerViewHolder.class,
-        customersList.orderByChild("name")  //TODO filter isStaff false
+        customersList.orderByChild("name")
         ) {
             @Override
             protected void populateViewHolder(CustomerViewHolder viewHolder, Customers model, int position) {
@@ -239,10 +237,8 @@ public class CustomersList extends AppCompatActivity {
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(CustomersList.this, "(1) " + local.getName(), Toast.LENGTH_SHORT).show();
-
                         Intent intent = new Intent(CustomersList.this, CustomerDetail.class);
-                        intent.putExtra("CustomerId", adapter.getRef(position).getKey());
+                        intent.putExtra("CustomerId", local.getId());
                         startActivity(intent);
                     }
                 });

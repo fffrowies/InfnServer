@@ -299,6 +299,7 @@ public class CustomersList extends AppCompatActivity {
         alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //TODO delete image on storage if was uploaded
                 dialog.dismiss();
             }
         });
@@ -315,7 +316,6 @@ public class CustomersList extends AppCompatActivity {
         {
             saveUri = data.getData();
             btnSelect.setText("Selected !!!");
-            btnSelect.setTextColor(Color.parseColor("#06A20D"));
         }
     }
 
@@ -341,7 +341,8 @@ public class CustomersList extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             mDialog.dismiss();
-                            Toast.makeText(CustomersList.this, "Uploaded!!!", Toast.LENGTH_SHORT).show();
+                            btnUpload.setText("Uploaded !!!");
+                            Toast.makeText(CustomersList.this, "Uploaded !!!", Toast.LENGTH_SHORT).show();
 
                             imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
@@ -375,75 +376,6 @@ public class CustomersList extends AppCompatActivity {
                     });
         }
     }
-
-//    @Override
-//    public boolean onContextItemSelected(MenuItem item) {
-//
-//        if (item.getTitle().equals(Common.UPDATE))
-//        {
-//            showUpdateCustomerDialog(adapter.getRef(item.getOrder()).getKey(), adapter.getItem(item.getOrder()));
-//        }
-//        else if (item.getTitle().equals(Common.DELETE))
-//        {
-//            deleteCustomer(adapter.getRef(item.getOrder()).getKey());
-//        }
-//
-//        return super.onContextItemSelected(item);
-//    }
-
-//    private void deleteCustomer(String key) {
-//
-//        customersList.child(key).removeValue();
-//    }
-
-//    private void showUpdateCustomerDialog(final String key, final User item) {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomersList.this);
-//        alertDialog.setTitle("Update Customer");
-//        alertDialog.setMessage("Please fill full information");
-//
-//        LayoutInflater inflater = this.getLayoutInflater();
-//        View add_customer_layout = inflater.inflate(R.layout.add_new_customer, null);
-//
-//        edtName = (MaterialEditText) add_customer_layout.findViewById(R.id.edtName);
-//        edtAddress = (MaterialEditText) add_customer_layout.findViewById(R.id.edtAddress);
-//        edtEmail = (MaterialEditText) add_customer_layout.findViewById(R.id.edtEmail);
-//        edtPhone = (MaterialEditText) add_customer_layout.findViewById(R.id.edtPhone);
-//
-//        //set default value for view
-//        edtName.setText(item.getName());
-//        edtAddress.setText(item.getAddress());
-//        edtEmail.setText(item.getEmail());
-//        edtPhone.setText(item.getPhone());
-//
-//        alertDialog.setView(add_customer_layout);
-//        alertDialog.setIcon(R.drawable.ic_person_add_black_24dp);
-//
-//        //Set button
-//        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.dismiss();
-//
-//                //Update information
-//                item.setName(edtName.getText().toString());
-//                item.setAddress(edtAddress.getText().toString());
-//                item.setEmail(edtEmail.getText().toString());
-//                item.setPhone(edtPhone.getText().toString());
-//
-//                customersList.child(key).setValue(item);
-//                Toast.makeText(CustomersList.this, "Customer "+item.getName()+" was updated", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//
-//                dialog.dismiss();
-//            }
-//        });
-//        alertDialog.show();
-//    }
 
     @Override
     public void onBackPressed() {

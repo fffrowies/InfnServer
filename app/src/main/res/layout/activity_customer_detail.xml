@@ -46,7 +46,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnCart"
         android:src="@drawable/ic_shopping_cart_black_24dp"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="6dp"
@@ -114,26 +114,34 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
+                    <com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/menu"
+                        app:backgroundMenuColor="#d2d2d2"
+                        app:icon_height="32dp"
+                        app:icon_width="32dp"
+                        app:item_backgroundColor="@color/colorPrimaryDark"
+                        app:item_colorSelected="@color/colorPrimary"
+                        app:backgroundNotifications="@color/colorAccent"
+                        app:item_marginBottom="2dp"
+                        app:item_marginLeft="4dp"
+                        app:item_marginRight="4dp"
+                        app:item_marginTop="6dp"
+                        app:item_textColor="#fff"
+                        app:item_textSize="6sp" />
+
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
-            <com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerInvoice"
+                android:layout_marginTop="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/menu"
-                app:backgroundMenuColor="#d2d2d2"
-                app:icon_height="32dp"
-                app:icon_width="32dp"
-                app:item_backgroundColor="@color/colorPrimaryDark"
-                app:item_colorSelected="@color/colorPrimary"
-                app:backgroundNotifications="@color/colorAccent"
-                app:item_marginBottom="2dp"
-                app:item_marginLeft="4dp"
-                app:item_marginRight="4dp"
-                app:item_marginTop="6dp"
-                app:item_textColor="#fff"
-                app:item_textSize="6sp" />
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 

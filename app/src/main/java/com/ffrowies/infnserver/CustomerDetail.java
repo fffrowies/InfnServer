@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView;
 import com.ffrowies.infnserver.Models.Customers;
+import com.ffrowies.infnserver.Models.InvoiceHeader;
+import com.ffrowies.infnserver.Models.InvoiceItems;
 import com.ffrowies.infnserver.Utils.Common;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,13 +57,18 @@ public class CustomerDetail extends AppCompatActivity {
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
     Button btnSelect, btnUpload;
 
+    //Inflated layout (to add item invoice: add_item_layout)
+    MaterialEditText edtDescription, edtAmount;
+
     FirebaseDatabase db;
-    DatabaseReference customers;
+    DatabaseReference customers, invoices;
     FirebaseStorage storage;
     StorageReference storageReference;
     
-    String customerId, currentKey;
+    String customerId, currentKey, currentItem;
     Customers currentCustomer;
+    InvoiceHeader invoiceHeader;
+    InvoiceItems invoiceItems;
 
     Uri saveUri;
 
@@ -75,6 +82,7 @@ public class CustomerDetail extends AppCompatActivity {
         //Firebase
         db = FirebaseDatabase.getInstance();
         customers = db.getReference("Customers");
+        invoices = db.getReference("Invoices");
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
@@ -95,7 +103,7 @@ public class CustomerDetail extends AppCompatActivity {
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(CustomerDetail.this, Cart.class));
             }
         });
 
@@ -108,7 +116,7 @@ public class CustomerDetail extends AppCompatActivity {
             getDetailCustomer();
         }
 
-        //Create menu
+        //Create horizontal menu
         initMenu();
     }
 
@@ -143,6 +151,8 @@ public class CustomerDetail extends AppCompatActivity {
                         break;
                     case 2:
                         //TODO Cart
+                        startActivity(new Intent(CustomerDetail.this, Cart.class));
+//                        addInvoiceItem();
                         break;
                     case 3:
                         //TODO (test Whatsapp)
@@ -188,6 +198,38 @@ public class CustomerDetail extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void addInvoiceItem() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomerDetail.this);
+        alertDialog.setTitle("Product | Service");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_item_layout = inflater.inflate(R.layout.add_new_item, null);
+
+        edtDescription = (MaterialEditText) add_item_layout.findViewById(R.id.edtDescription);
+        edtAmount = (MaterialEditText) add_item_layout.findViewById(R.id.edtAmount);
+
+        alertDialog.setView(add_item_layout);
+        alertDialog.setIcon(R.drawable.ic_add_shopping_cart_black_24dp);
+
+        //Set button
+        alertDialog.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //ingresar al recyclerview items de factura
+                dialog.dismiss();
+            }
+        });
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
     }
 
     private void openWhatsappContact(String number) {

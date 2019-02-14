@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ffrowies.infnserver.Database.Database;
+import com.ffrowies.infnserver.Models.Invoice;
 import com.ffrowies.infnserver.Models.Order;
 import com.ffrowies.infnserver.Utils.Common;
 import com.ffrowies.infnserver.ViewHolder.CartAdapter;
@@ -24,6 +25,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +48,9 @@ public class Cart extends AppCompatActivity {
     List<Order> cart = new ArrayList<>();
 
     CartAdapter adapter;
+
+    String customerId;
+    Date date = new Date();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,10 @@ public class Cart extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recycler_cart.setLayoutManager(layoutManager);
 
+        //Get customer Id from Intent
+        if (getIntent() != null)
+            customerId = getIntent().getStringExtra("CustomerId");
+
         new Database(this).cleanCart();
 
         txvTotalPrice = (TextView) findViewById(R.id.txvTotalPrice);
@@ -93,10 +102,21 @@ public class Cart extends AppCompatActivity {
 
     private void registerInvoice() {
 
-        //Create new invoice
-        //txvTotalPrice.getText().toString();
+
+        Invoice invoice = new Invoice(
+                customerId,
+                Long.toString(date.getTime()),
+                txvTotalPrice.getText().toString(),
+                cart
+        );
 
         //Submit to Firebase
+        //Using System.CurrentMilli to key
+        invoices.child(String.valueOf(System.currentTimeMillis())).setValue(invoice);
+        //Delete cart
+        new Database(getBaseContext()).cleanCart();
+        Toast.makeText(Cart.this, "Thank you, placed.", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private void addCartItem() {

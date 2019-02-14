@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ffrowies.infnserver.Interface.ItemClickListener;
 import com.ffrowies.infnserver.Models.Order;
 import com.ffrowies.infnserver.R;
 import com.ffrowies.infnserver.Utils.Common;
@@ -24,8 +23,6 @@ class CartViewHolder extends RecyclerView.ViewHolder implements
         View.OnCreateContextMenuListener {
 
     public TextView txvItemDescription, txvItemAmount;
-
-    private ItemClickListener itemClickListener;
 
     public CartViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -48,7 +45,7 @@ class CartViewHolder extends RecyclerView.ViewHolder implements
     }
 }
 
-public class CartAdapter  extends RecyclerView.Adapter<CartViewHolder> {
+public class CartAdapter extends RecyclerView.Adapter<CartViewHolder> {
     private List<Order> listData = new ArrayList<>();
     private Context context;
 

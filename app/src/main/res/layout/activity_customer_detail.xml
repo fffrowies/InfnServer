@@ -83,7 +83,6 @@
                     <TextView
                         android:id="@+id/txvCustomerPhone"
                         android:layout_marginLeft="16dp"
-                        android:padding="4dp"
                         android:text="Customer Phone"
                         android:textColor="@android:color/black"
                         android:textSize="24sp"
@@ -94,7 +93,6 @@
                     <TextView
                         android:id="@+id/txvCustomerEmail"
                         android:layout_marginLeft="16dp"
-                        android:padding="4dp"
                         android:text="Customer Email"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
@@ -106,7 +104,6 @@
                         android:id="@+id/txvCustomerAddress"
                         android:layout_marginLeft="16dp"
                         android:layout_marginBottom="16dp"
-                        android:padding="4dp"
                         android:text="Customer Address"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
@@ -127,7 +124,7 @@
                         app:item_marginBottom="2dp"
                         app:item_marginLeft="4dp"
                         app:item_marginRight="4dp"
-                        app:item_marginTop="6dp"
+                        app:item_marginTop="2dp"
                         app:item_textColor="#fff"
                         app:item_textSize="6sp" />
 
@@ -137,9 +134,9 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerInvoice"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="0dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" >
 
             </android.support.v7.widget.RecyclerView>
 

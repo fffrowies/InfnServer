@@ -11,7 +11,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -20,10 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView;
+import com.ffrowies.infnserver.Interface.ItemClickListener;
 import com.ffrowies.infnserver.Models.Customers;
-import com.ffrowies.infnserver.Models.InvoiceHeader;
-import com.ffrowies.infnserver.Models.InvoiceItems;
+import com.ffrowies.infnserver.Models.Invoice;
 import com.ffrowies.infnserver.Utils.Common;
+import com.ffrowies.infnserver.ViewHolder.InvoiceViewHolder;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +45,7 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.WordUtils;
 
+import java.util.Date;
 import java.util.UUID;
 
 public class CustomerDetail extends AppCompatActivity {
@@ -58,18 +63,20 @@ public class CustomerDetail extends AppCompatActivity {
     Button btnSelect, btnUpload;
 
     FirebaseDatabase db;
-    DatabaseReference customers, invoices;
+    DatabaseReference customers, invoiceList;
     FirebaseStorage storage;
     StorageReference storageReference;
     
-    String customerId, currentKey, currentItem;
+    String customerId, currentKey;
     Customers currentCustomer;
-    InvoiceHeader invoiceHeader;
-    InvoiceItems invoiceItems;
 
     Uri saveUri;
 
     HorizontalScrollMenuView menu;
+
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +86,7 @@ public class CustomerDetail extends AppCompatActivity {
         //Firebase
         db = FirebaseDatabase.getInstance();
         customers = db.getReference("Customers");
-        invoices = db.getReference("Invoices");
+        invoiceList = db.getReference("Invoices");
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
@@ -89,6 +96,13 @@ public class CustomerDetail extends AppCompatActivity {
         txvCustomerPhone = (TextView) findViewById(R.id.txvCustomerPhone);
         imvCustomer = (ImageView) findViewById(R.id.imvCustomer);
 
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
+
         btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
 
         menu = (HorizontalScrollMenuView) findViewById(R.id.menu);
@@ -96,13 +110,6 @@ public class CustomerDetail extends AppCompatActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppbar);
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppbar);
-
-        btnCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(CustomerDetail.this, Cart.class));
-            }
-        });
 
         //Get customer Id from Intent
         if (getIntent() != null)
@@ -112,6 +119,17 @@ public class CustomerDetail extends AppCompatActivity {
         {
             getDetailCustomer();
         }
+
+        btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
+                intentCart.putExtra("CustomerId", customerId);
+                startActivity(intentCart);
+            }
+        });
+
+        loadInvoicesList();
 
         //Create horizontal menu
         initMenu();
@@ -147,9 +165,10 @@ public class CustomerDetail extends AppCompatActivity {
                         //TODO Account
                         break;
                     case 2:
-                        //TODO Cart
-                        startActivity(new Intent(CustomerDetail.this, Cart.class));
-//                        addInvoiceItem();
+                        //Cart
+                        Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
+                        intentCart.putExtra("CustomerId", customerId);
+                        startActivity(intentCart);
                         break;
                     case 3:
                         //TODO (test Whatsapp)
@@ -368,4 +387,34 @@ public class CustomerDetail extends AppCompatActivity {
         }
     }
 
+    private void loadInvoicesList() {
+        adapter = new FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder>(
+                Invoice.class,
+                R.layout.layout_invoice_item,
+                InvoiceViewHolder.class,
+                invoiceList.orderByChild("customerId").equalTo(customerId)
+        ) {
+            @Override
+            protected void populateViewHolder(InvoiceViewHolder viewHolder, Invoice model, int position) {
+                String longValueDate = model.getDate();
+                long millisecond = Long.parseLong(longValueDate);
+                String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
+                viewHolder.txvDate.setText(dateString);
+                viewHolder.txvTotal.setText(model.getTotal());;
+
+                final Invoice local = model;
+                viewHolder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onClick(View view, int position, boolean isLongClick) {
+                        Toast.makeText(CustomerDetail.this, "Invoice Detail", Toast.LENGTH_SHORT).show();
+//                        Intent intent = new Intent(InvoiceDetail.this, CustomerDetail.class);
+//                        intent.putExtra("CustomerId", local.getId());
+//                        startActivity(intent);
+                    }
+                });
+            }
+        };
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+    }
 }

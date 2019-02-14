@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Decription"
-            android:inputType="textMultiLine"
+            android:inputType="text"
             android:text=""
             android:textSize="20sp"
             android:textColor="@color/colorPrimaryDark"
@@ -27,8 +27,8 @@
             app:met_primaryColor="@color/colorAccent"
             app:met_errorColor="#DD1A00"
             app:met_floatingLabel="highlight"
-            app:met_maxCharacters="60"
-            app:met_singleLineEllipsis="false" />
+            app:met_maxCharacters="40"
+            app:met_singleLineEllipsis="true" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/edtAmount"

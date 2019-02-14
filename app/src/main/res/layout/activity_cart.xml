@@ -11,10 +11,12 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listCart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/txvTotalPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -45,6 +47,7 @@
         android:text="$1,000"
         android:textColor="@android:color/white"
         android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
         app:layout_constraintStart_toEndOf="@+id/textView2" />
 
@@ -57,6 +60,7 @@
         android:text="Total: "
         android:textColor="@android:color/white"
         android:textSize="20sp"
+        android:textStyle="normal"
         app:layout_constraintBottom_toTopOf="@+id/btnPlaceOrder"
         app:layout_constraintStart_toStartOf="parent" />
 

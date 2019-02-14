@@ -1,9 +1,13 @@
 package com.ffrowies.infnserver;
 
+import android.content.DialogInterface;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +20,7 @@ import com.ffrowies.infnserver.Utils.Common;
 import com.ffrowies.infnserver.ViewHolder.CartAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -27,11 +32,16 @@ public class Cart extends AppCompatActivity {
     RecyclerView recycler_cart;
     RecyclerView.LayoutManager layoutManager;
 
+    FloatingActionButton fab;
+
     FirebaseDatabase database;
     DatabaseReference invoices;
 
     TextView txvTotalPrice;
     Button btnPlaceOrder;
+
+    //Inflated layout (to add item invoice: add_item_layout)
+    MaterialEditText edtDescription, edtAmount;
 
     List<Order> cart = new ArrayList<>();
 
@@ -42,6 +52,14 @@ public class Cart extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addCartItem();
+            }
+        });
+
         //Firebase
         database = FirebaseDatabase.getInstance();
         invoices = database.getReference("Invoices");
@@ -51,6 +69,8 @@ public class Cart extends AppCompatActivity {
         recycler_cart.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler_cart.setLayoutManager(layoutManager);
+
+        new Database(this).cleanCart();
 
         txvTotalPrice = (TextView) findViewById(R.id.txvTotalPrice);
         btnPlaceOrder = (Button) findViewById(R.id.btnPlaceOrder);
@@ -66,7 +86,8 @@ public class Cart extends AppCompatActivity {
             }
         });
 
-        loadListProducts();
+        loadListItems();
+        addCartItem();
 
     }
 
@@ -78,7 +99,47 @@ public class Cart extends AppCompatActivity {
         //Submit to Firebase
     }
 
-    private void loadListProducts() {
+    private void addCartItem() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Cart.this);
+        alertDialog.setTitle("Product | Service");
+        alertDialog.setMessage("Please fill full information");
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View add_item_layout = inflater.inflate(R.layout.add_new_item, null);
+
+        edtDescription = (MaterialEditText) add_item_layout.findViewById(R.id.edtDescription);
+        edtAmount = (MaterialEditText) add_item_layout.findViewById(R.id.edtAmount);
+
+        alertDialog.setView(add_item_layout);
+        alertDialog.setIcon(R.drawable.ic_add_shopping_cart_black_24dp);
+
+        //Set button
+        alertDialog.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!edtDescription.getText().toString().isEmpty() && !edtAmount.getText().toString().isEmpty())
+                {
+                    //add to sqlite db and recyclerview listCart
+                    new Database(getBaseContext()).addToCart(new Order(
+                            edtDescription.getText().toString(),
+                            edtAmount.getText().toString()));
+
+                    dialog.dismiss();
+                    loadListItems();
+                }
+            }
+        });
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
+
+    private void loadListItems() {
         cart = new Database(this).getCarts();
         adapter = new CartAdapter(cart, this);
         adapter.notifyDataSetChanged();
@@ -111,6 +172,6 @@ public class Cart extends AppCompatActivity {
         for (Order item:cart)
             new Database(this).addToCart(item);
         //Refresh
-        loadListProducts();
+        loadListItems();
     }
 }

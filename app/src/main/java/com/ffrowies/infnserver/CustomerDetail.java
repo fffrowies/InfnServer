@@ -57,9 +57,6 @@ public class CustomerDetail extends AppCompatActivity {
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
     Button btnSelect, btnUpload;
 
-    //Inflated layout (to add item invoice: add_item_layout)
-    MaterialEditText edtDescription, edtAmount;
-
     FirebaseDatabase db;
     DatabaseReference customers, invoices;
     FirebaseStorage storage;
@@ -200,38 +197,6 @@ public class CustomerDetail extends AppCompatActivity {
         });
     }
 
-    private void addInvoiceItem() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomerDetail.this);
-        alertDialog.setTitle("Product | Service");
-        alertDialog.setMessage("Please fill full information");
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View add_item_layout = inflater.inflate(R.layout.add_new_item, null);
-
-        edtDescription = (MaterialEditText) add_item_layout.findViewById(R.id.edtDescription);
-        edtAmount = (MaterialEditText) add_item_layout.findViewById(R.id.edtAmount);
-
-        alertDialog.setView(add_item_layout);
-        alertDialog.setIcon(R.drawable.ic_add_shopping_cart_black_24dp);
-
-        //Set button
-        alertDialog.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //ingresar al recyclerview items de factura
-                dialog.dismiss();
-            }
-        });
-        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.dismiss();
-            }
-        });
-        alertDialog.show();
-    }
-
     private void openWhatsappContact(String number) {
         Uri uri = Uri.parse("smsto:" + number);
         Intent i = new Intent(Intent.ACTION_SENDTO, uri);
@@ -346,8 +311,8 @@ public class CustomerDetail extends AppCompatActivity {
                 && data.getData() != null)
         {
             saveUri = data.getData();
-            btnSelect.setText("Selected !!!");
             btnUpload.setText("Upload");
+            btnSelect.setText("Selected !!!");
         }
     }
 

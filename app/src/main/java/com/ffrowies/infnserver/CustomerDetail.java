@@ -63,7 +63,7 @@ public class CustomerDetail extends AppCompatActivity {
     Button btnSelect, btnUpload;
 
     FirebaseDatabase db;
-    DatabaseReference customers, invoiceList;
+    DatabaseReference customers;
     FirebaseStorage storage;
     StorageReference storageReference;
     
@@ -74,9 +74,11 @@ public class CustomerDetail extends AppCompatActivity {
 
     HorizontalScrollMenuView menu;
 
+    DatabaseReference invoiceList;
+    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
+
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,13 +98,6 @@ public class CustomerDetail extends AppCompatActivity {
         txvCustomerPhone = (TextView) findViewById(R.id.txvCustomerPhone);
         imvCustomer = (ImageView) findViewById(R.id.imvCustomer);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
-        recyclerView.setLayoutManager(layoutManager);
-
         btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
 
         menu = (HorizontalScrollMenuView) findViewById(R.id.menu);
@@ -112,8 +107,16 @@ public class CustomerDetail extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppbar);
 
         //Get customer Id from Intent
-        if (getIntent() != null)
+        if (getIntent() != null) {
             customerId = getIntent().getStringExtra("CustomerId");
+        }
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         if (!customerId.isEmpty())
         {
@@ -129,10 +132,9 @@ public class CustomerDetail extends AppCompatActivity {
             }
         });
 
-        loadInvoicesList();
-
         //Create horizontal menu
         initMenu();
+        loadInvoicesList();
     }
 
     private void initMenu() {
@@ -150,8 +152,6 @@ public class CustomerDetail extends AppCompatActivity {
         menu.setOnHSMenuClickListener(new HorizontalScrollMenuView.OnHSMenuClickListener() {
             @Override
             public void onHSMClick(com.darwindeveloper.horizontalscrollmenulibrary.extras.MenuItem menuItem, int position) {
-                Toast.makeText(CustomerDetail.this, ""+menuItem.getText(), Toast.LENGTH_SHORT).show();
-
                 String phone = ((TextView) findViewById(R.id.txvCustomerPhone)).getText().toString();
                 String email = ((TextView) findViewById(R.id.txvCustomerEmail)).getText().toString();
 
@@ -162,7 +162,9 @@ public class CustomerDetail extends AppCompatActivity {
                         startActivity(new Intent(CustomerDetail.this, CustomersList.class));
                         break;
                     case 1:
-                        //TODO Account
+                        //Account
+                        loadInvoicesList();
+                        adapter.notifyDataSetChanged();
                         break;
                     case 2:
                         //Cart
@@ -414,7 +416,7 @@ public class CustomerDetail extends AppCompatActivity {
                 });
             }
         };
-        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
     }
 }

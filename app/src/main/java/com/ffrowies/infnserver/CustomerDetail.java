@@ -3,6 +3,7 @@ package com.ffrowies.infnserver;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -402,16 +403,21 @@ public class CustomerDetail extends AppCompatActivity {
                 long millisecond = Long.parseLong(longValueDate);
                 String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
                 viewHolder.txvDate.setText(dateString);
-                viewHolder.txvTotal.setText(model.getTotal());;
+                viewHolder.txvTotal.setText(model.getTotal());
+
+                if (position % 2 != 0) {
+                    viewHolder.txvDate.setTextColor(Color.parseColor("#8B000000"));
+                    viewHolder.txvTotal.setTextColor(Color.parseColor("#8B000000"));
+                }
 
                 final Invoice local = model;
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
                         Toast.makeText(CustomerDetail.this, "Invoice Detail", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(InvoiceDetail.this, CustomerDetail.class);
-//                        intent.putExtra("CustomerId", local.getId());
-//                        startActivity(intent);
+                        Intent intent = new Intent(CustomerDetail.this, InvoiceDetail.class);
+                        intent.putExtra("InvoiceId", local.getDate());      //date used as id
+                        startActivity(intent);
                     }
                 });
             }

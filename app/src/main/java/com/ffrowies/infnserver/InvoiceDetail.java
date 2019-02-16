@@ -1,92 +1,55 @@
 package com.ffrowies.infnserver;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.widget.TextView;
 
-import com.ffrowies.infnserver.Database.Database;
-import com.ffrowies.infnserver.Models.Invoice;
-import com.ffrowies.infnserver.Models.Order;
-import com.ffrowies.infnserver.ViewHolder.CartAdapter;
-import com.ffrowies.infnserver.ViewHolder.InvoiceViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.ffrowies.infnserver.Utils.Common;
+import com.ffrowies.infnserver.ViewHolder.InvoiceDetailAdapter;
 
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.Date;
 
 public class InvoiceDetail extends AppCompatActivity {
 
-    RecyclerView recycler_cart;
+    TextView txvCustomerName, txvInvoiceDate, txvInvoiceTotal;
+    String invoiceIdValue = "";
+    String customerName = "";
+    RecyclerView lstInvoiceDetail;
     RecyclerView.LayoutManager layoutManager;
-
-    FirebaseDatabase database;
-    DatabaseReference invoices;
-//    FirebaseRecyclerAdapter<Invoice, InvoiceDetailViewHolder> adapter;
-
-    TextView txvTotalPrice;
-
-    List<Order> cart = new ArrayList<>();
-
-    String invoiceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice_detail);
 
-        //Firebase
-        database = FirebaseDatabase.getInstance();
-        invoices = database.getReference("Invoices");
+        txvCustomerName = (TextView) findViewById(R.id.txvCustomerName);
+        txvInvoiceDate = (TextView) findViewById(R.id.txvInvoiceDate);
+        txvInvoiceTotal = (TextView) findViewById(R.id.txvInvoiceTotal);
 
-        //Init
-        recycler_cart = (RecyclerView) findViewById(R.id.listCart);
-        recycler_cart.setHasFixedSize(true);
+        lstInvoiceDetail = (RecyclerView) findViewById(R.id.lstInvoiceDetail);
+        lstInvoiceDetail.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
-        recycler_cart.setLayoutManager(layoutManager);
+        lstInvoiceDetail.setLayoutManager(layoutManager);
 
-        //Get customer Id from Intent
         if (getIntent() != null)
-            invoiceId = getIntent().getStringExtra("InvoiceId");
+        {
+            invoiceIdValue = getIntent().getStringExtra("InvoiceId");
+            customerName = getIntent().getStringExtra("CustomerName");
+        }
 
-        new Database(this).cleanCart();
+        String longValueDate = Common.currentInvoice.getDate();
+        long millisecond = Long.parseLong(longValueDate);
+        String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
+        txvCustomerName.setText(customerName);
+        txvInvoiceDate.setText(dateString);
+        txvInvoiceTotal.setText(Common.currentInvoice.getTotal());
 
-        txvTotalPrice = (TextView) findViewById(R.id.txvTotalPrice);
+        InvoiceDetailAdapter adapter = new InvoiceDetailAdapter(Common.currentInvoice.getItems());
+        adapter.notifyDataSetChanged();
+        lstInvoiceDetail.setAdapter(adapter);
 
-        loadListItems();
     }
-
-    private void loadListItems() {
-//        cart = new Database(this).getCarts();
-//        adapter = new CartAdapter(cart, this);
-//        adapter.notifyDataSetChanged();
-//        recycler_cart.setAdapter(adapter);
-
-        //Calculate total price
-        int total = 0;
-        for(Order order:cart)
-            total += Integer.parseInt(order.getPrice());
-        Locale locale = new Locale("en", "US");
-        NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
-
-        txvTotalPrice.setText(fmt.format(total));
-    }
-
-    private void deleteCart(int position) {
-        //remove item at List<Order> by position
-        cart.remove(position);
-        // delete all old data from SQLite
-        new Database(this).cleanCart();
-        // update new data from List<Order> to SQLite
-        for (Order item:cart)
-            new Database(this).addToCart(item);
-        //Refresh
-        loadListItems();
-    }
-
 }

@@ -415,9 +415,11 @@ public class CustomerDetail extends AppCompatActivity {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
                         Toast.makeText(CustomerDetail.this, "Invoice Detail", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(CustomerDetail.this, InvoiceDetail.class);
-                        intent.putExtra("InvoiceId", local.getDate());      //date used as id
-                        startActivity(intent);
+                        Intent invoiceDetailIntent = new Intent(CustomerDetail.this, InvoiceDetail.class);
+                        Common.currentInvoice = local;
+                        invoiceDetailIntent.putExtra("InvoiceId", adapter.getRef(position).getKey());
+                        invoiceDetailIntent.putExtra("CustomerName", currentCustomer.getName());
+                        startActivity(invoiceDetailIntent);
                     }
                 });
             }

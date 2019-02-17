@@ -14,7 +14,6 @@
         android:theme="@style/AppTheme">
         <activity android:name=".InvoiceDetail"></activity>
         <activity android:name=".Cart" />
-        <activity android:name=".Account" />
         <activity android:name=".CustomerDetail" />
         <activity android:name=".CustomersList" />
         <activity android:name=".SignIn" />

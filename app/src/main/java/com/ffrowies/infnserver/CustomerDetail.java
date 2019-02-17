@@ -57,7 +57,7 @@ public class CustomerDetail extends AppCompatActivity {
     TextView txvCustomerAddress, txvCustomerEmail, txvCustomerPhone;
     ImageView imvCustomer;
     CollapsingToolbarLayout collapsingToolbarLayout;
-    FloatingActionButton btnCart;
+    FloatingActionButton btnAccount;
 
     //Inflated layout (to Update Customer: add_customer_layout)
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
@@ -99,7 +99,7 @@ public class CustomerDetail extends AppCompatActivity {
         txvCustomerPhone = (TextView) findViewById(R.id.txvCustomerPhone);
         imvCustomer = (ImageView) findViewById(R.id.imvCustomer);
 
-        btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
+        btnAccount = (FloatingActionButton) findViewById(R.id.btnAccount);
 
         menu = (HorizontalScrollMenuView) findViewById(R.id.menu);
 
@@ -124,12 +124,15 @@ public class CustomerDetail extends AppCompatActivity {
             getDetailCustomer();
         }
 
-        btnCart.setOnClickListener(new View.OnClickListener() {
+        btnAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
-                intentCart.putExtra("CustomerId", customerId);
-                startActivity(intentCart);
+                //Account
+                loadInvoicesList();
+//
+//                Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
+//                intentCart.putExtra("CustomerId", customerId);
+//                startActivity(intentCart);
             }
         });
 
@@ -138,9 +141,20 @@ public class CustomerDetail extends AppCompatActivity {
         loadInvoicesList();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadInvoicesList();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadInvoicesList();
+    }
+
     private void initMenu() {
         menu.addItem("Customers", R.drawable.ic_contacts_black_24dp);
-        menu.addItem("Account", R.drawable.ic_attach_money_black_24dp);
         menu.addItem("Cart", R.drawable.ic_shopping_cart_black_24dp);
         menu.addItem("Whatsapp", R.drawable.ic_iconfinder_whatsapp_115679);
         menu.addItem("Call", R.drawable.ic_phone_black_24dp);
@@ -163,29 +177,24 @@ public class CustomerDetail extends AppCompatActivity {
                         startActivity(new Intent(CustomerDetail.this, CustomersList.class));
                         break;
                     case 1:
-                        //Account
-                        loadInvoicesList();
-                        adapter.notifyDataSetChanged();
-                        break;
-                    case 2:
                         //Cart
                         Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
                         intentCart.putExtra("CustomerId", customerId);
                         startActivity(intentCart);
                         break;
-                    case 3:
+                    case 2:
                         //TODO (test Whatsapp)
                         openWhatsappContact(phone);
                         break;
-                    case 4:
+                    case 3:
                         //Phone Call
                         startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null)));
                         break;
-                    case 5:
+                    case 4:
                         //SMS
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null)));
                         break;
-                    case 6:
+                    case 5:
                         //TODO (test Email)
                         Intent i = new Intent(Intent.ACTION_SEND);
                         i.setType("message/rfc822");
@@ -198,18 +207,18 @@ public class CustomerDetail extends AppCompatActivity {
                             Toast.makeText(CustomerDetail.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case 7:
+                    case 6:
                         //Update
                         showUpdateCustomerDialog();
                         break;
-                    case 8:
+                    case 7:
                         //Delete
                         deleteCustomer();
                         Toast.makeText(CustomerDetail.this, "Customer " + currentCustomer.getName() + " was deleted", Toast.LENGTH_SHORT).show();
                         Intent intentDeleted = new Intent(CustomerDetail.this, CustomersList.class);
                         startActivity(intentDeleted);
                         break;
-                    case 9:
+                    case 8:
                         //Exit
                         startActivity(
                                 new Intent(CustomerDetail.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
@@ -424,7 +433,7 @@ public class CustomerDetail extends AppCompatActivity {
                 });
             }
         };
+        adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();
     }
 }

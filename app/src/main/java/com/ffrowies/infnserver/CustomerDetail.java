@@ -154,15 +154,15 @@ public class CustomerDetail extends AppCompatActivity {
     }
 
     private void initMenu() {
-        menu.addItem("Customers", R.drawable.ic_contacts_black_24dp);
-        menu.addItem("Cart", R.drawable.ic_shopping_cart_black_24dp);
+        menu.addItem(getString(R.string.customers), R.drawable.ic_contacts_black_24dp);
+        menu.addItem(getString(R.string.cart), R.drawable.ic_shopping_cart_black_24dp);
         menu.addItem("Whatsapp", R.drawable.ic_iconfinder_whatsapp_115679);
-        menu.addItem("Call", R.drawable.ic_phone_black_24dp);
+        menu.addItem(getString(R.string.call), R.drawable.ic_phone_black_24dp);
         menu.addItem("SMS", R.drawable.ic_sms_black_24dp);
         menu.addItem("Email", R.drawable.ic_email_black_24dp);
-        menu.addItem("Update", R.drawable.ic_person_outline_black_24dp);
-        menu.addItem("Delete", R.drawable.ic_delete_black_24dp);
-        menu.addItem("Exit", R.drawable.ic_exit_to_app_black_24dp);
+        menu.addItem(getString(R.string.update), R.drawable.ic_person_outline_white_24dp);
+        menu.addItem(getString(R.string.delete), R.drawable.ic_delete_black_24dp);
+        menu.addItem(getString(R.string.exit), R.drawable.ic_exit_to_app_black_24dp);
 
         menu.setOnHSMenuClickListener(new HorizontalScrollMenuView.OnHSMenuClickListener() {
             @Override
@@ -204,7 +204,7 @@ public class CustomerDetail extends AppCompatActivity {
                         try {
                             startActivity(Intent.createChooser(i, "Send mail..."));
                         } catch (android.content.ActivityNotFoundException ex) {
-                            Toast.makeText(CustomerDetail.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerDetail.this, getString(R.string.there_no_email_cli_inst), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case 6:
@@ -214,7 +214,6 @@ public class CustomerDetail extends AppCompatActivity {
                     case 7:
                         //Delete
                         deleteCustomer();
-                        Toast.makeText(CustomerDetail.this, "Customer " + currentCustomer.getName() + " was deleted", Toast.LENGTH_SHORT).show();
                         Intent intentDeleted = new Intent(CustomerDetail.this, CustomersList.class);
                         startActivity(intentDeleted);
                         break;
@@ -268,8 +267,8 @@ public class CustomerDetail extends AppCompatActivity {
 
     private void showUpdateCustomerDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomerDetail.this);
-        alertDialog.setTitle("Update Customer");
-        alertDialog.setMessage("Please fill full information");
+        alertDialog.setTitle(getString(R.string.update_customer));
+        alertDialog.setMessage(getString(R.string.please_fill_full_info));
 
         LayoutInflater inflater = this.getLayoutInflater();
         View add_customer_layout = inflater.inflate(R.layout.add_new_customer, null);
@@ -306,7 +305,7 @@ public class CustomerDetail extends AppCompatActivity {
         alertDialog.setIcon(R.drawable.ic_person_outline_black_24dp);
 
         //Set button
-        alertDialog.setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(getString(R.string.update).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -323,7 +322,7 @@ public class CustomerDetail extends AppCompatActivity {
                 Toast.makeText(CustomerDetail.this, "Customer "+currentCustomer.getName()+" was updated", Toast.LENGTH_SHORT).show();
             }
         });
-        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //TODO delete image if recent uploaded
@@ -342,8 +341,8 @@ public class CustomerDetail extends AppCompatActivity {
                 && data.getData() != null)
         {
             saveUri = data.getData();
-            btnUpload.setText("Upload");
-            btnSelect.setText("Selected !!!");
+            btnUpload.setText(getString(R.string.upload));
+            btnSelect.setText(getString(R.string.selected) + " !!!");
         }
     }
 
@@ -351,7 +350,7 @@ public class CustomerDetail extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Common.PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_picture)), Common.PICK_IMAGE_REQUEST);
     }
 
     private void uploadImage() {
@@ -359,7 +358,7 @@ public class CustomerDetail extends AppCompatActivity {
         if (saveUri != null)
         {
             final ProgressDialog mDialog = new ProgressDialog(CustomerDetail.this);
-            mDialog.setMessage("Uploading...");
+            mDialog.setMessage(getString(R.string.uploading) + "...");
             mDialog.show();
 
             String imageName = UUID.randomUUID().toString();
@@ -369,8 +368,8 @@ public class CustomerDetail extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             mDialog.dismiss();
-                            btnUpload.setText("Uploaded !!!");
-                            btnSelect.setText("Select");
+                            btnUpload.setText(getString(R.string.uploaded) + "!!!");
+                            btnSelect.setText(getString(R.string.select));
                             Toast.makeText(CustomerDetail.this, "Uploaded !!!", Toast.LENGTH_SHORT).show();
 
                             imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -393,7 +392,7 @@ public class CustomerDetail extends AppCompatActivity {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            mDialog.setMessage("Uploaded " + progress + "%");
+                            mDialog.setMessage(getString(R.string.uploaded) + " " + progress + " %");
                         }
                     });
         }
@@ -423,7 +422,6 @@ public class CustomerDetail extends AppCompatActivity {
                 viewHolder.setItemClickListener(new ItemClickListener() {
                     @Override
                     public void onClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(CustomerDetail.this, "Invoice Detail", Toast.LENGTH_SHORT).show();
                         Intent invoiceDetailIntent = new Intent(CustomerDetail.this, InvoiceDetail.class);
                         Common.currentInvoice = local;
                         invoiceDetailIntent.putExtra("InvoiceId", adapter.getRef(position).getKey());

@@ -45,7 +45,7 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View v) {
 
                 final ProgressDialog mDialog = new ProgressDialog(SignIn.this);
-                mDialog.setMessage("Please waiting...");
+                mDialog.setMessage(getString(R.string.please_waiting));
                 mDialog.show();
 
                 tableStaff.addValueEventListener(new ValueEventListener() {
@@ -72,13 +72,13 @@ public class SignIn extends AppCompatActivity {
                             }
                             else
                             {
-                                Toast.makeText(SignIn.this, "Wrong Password !!!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignIn.this, getString(R.string.wrong_password), Toast.LENGTH_SHORT).show();
                             }
                         }
                         else
                         {
                             mDialog.dismiss();
-                            Toast.makeText(SignIn.this, "Staff user not exist in Database", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignIn.this, getString(R.string.staff_user_ne_in_db), Toast.LENGTH_SHORT).show();
                         }
                     }
 

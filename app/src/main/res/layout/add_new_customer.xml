@@ -18,7 +18,7 @@
             android:id="@+id/edtName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name"
+            android:hint="@string/name"
             android:inputType="text"
             android:text=""
             android:textSize="20sp"
@@ -33,7 +33,7 @@
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/edtAddress"
-            android:hint="Address"
+            android:hint="@string/address"
             android:inputType="text"
             android:text=""
             android:layout_width="match_parent"
@@ -67,7 +67,7 @@
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/edtPhone"
-            android:hint="Phone"
+            android:hint="@string/phone"
             android:inputType="phone"
             android:text=""
             android:layout_width="match_parent"
@@ -90,7 +90,7 @@
 
             <Button
                 android:id="@+id/btnSelect"
-                android:text="SELECT"
+                android:text="@string/select"
                 android:textColor="@color/colorAccent"
                 android:backgroundTint="@android:color/white"
                 android:layout_marginRight="8dp"
@@ -102,7 +102,7 @@
 
             <Button
                 android:id="@+id/btnUpload"
-                android:text="UPLOAD"
+                android:text="@string/upload"
                 android:textColor="@android:color/white"
                 android:backgroundTint="@color/colorAccent"
                 android:layout_marginRight="8dp"

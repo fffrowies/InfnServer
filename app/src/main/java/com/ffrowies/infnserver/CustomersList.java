@@ -109,7 +109,7 @@ public class CustomersList extends AppCompatActivity {
 
         //Search
         materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
-        materialSearchBar.setHint("Enter customer name");
+        materialSearchBar.setHint(getString(R.string.enter_customer_name));
         loadSuggest();
         materialSearchBar.setLastSuggestions(suggestList);
         materialSearchBar.setCardViewElevation(10);
@@ -249,8 +249,8 @@ public class CustomersList extends AppCompatActivity {
 
     private void showAddCustomerDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(CustomersList.this);
-        alertDialog.setTitle("Add new Customer");
-        alertDialog.setMessage("Please fill full information");
+        alertDialog.setTitle(getString(R.string.add_new_customer));
+        alertDialog.setMessage(getString(R.string.please_fill_full_info));
 
         LayoutInflater inflater = this.getLayoutInflater();
         View add_customer_layout = inflater.inflate(R.layout.add_new_customer, null);
@@ -281,7 +281,7 @@ public class CustomersList extends AppCompatActivity {
         alertDialog.setIcon(R.drawable.ic_person_add_black_24dp);
 
         //Set button
-        alertDialog.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(getString(R.string.add).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -291,11 +291,10 @@ public class CustomersList extends AppCompatActivity {
                 if (newCustomer != null)
                 {
                     customersList.push().setValue(newCustomer);
-                    Toast.makeText(CustomersList.this, "New customer "+newCustomer.getName()+" was added", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //TODO delete image on storage if was uploaded
@@ -314,7 +313,7 @@ public class CustomersList extends AppCompatActivity {
                 && data.getData() != null)
         {
             saveUri = data.getData();
-            btnSelect.setText("Selected !!!");
+            btnSelect.setText(getString(R.string.selected) + "!!!");
         }
     }
 
@@ -322,7 +321,7 @@ public class CustomersList extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Common.PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_picture)), Common.PICK_IMAGE_REQUEST);
     }
 
     private void uploadImage() {
@@ -330,7 +329,7 @@ public class CustomersList extends AppCompatActivity {
         if (saveUri != null)
         {
             final ProgressDialog mDialog = new ProgressDialog(CustomersList.this);
-            mDialog.setMessage("Uploading...");
+            mDialog.setMessage(getString(R.string.uploading) + "...");
             mDialog.show();
 
             String imageName = UUID.randomUUID().toString();
@@ -340,8 +339,7 @@ public class CustomersList extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             mDialog.dismiss();
-                            btnUpload.setText("Uploaded !!!");
-                            Toast.makeText(CustomersList.this, "Uploaded !!!", Toast.LENGTH_SHORT).show();
+                            btnUpload.setText(getString(R.string.uploaded) + "!!!");
 
                             imageFolder.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
@@ -370,7 +368,7 @@ public class CustomersList extends AppCompatActivity {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            mDialog.setMessage("Uploaded " + progress + "%");
+                            mDialog.setMessage(getString(R.string.uploaded) + " " + progress + "%");
                         }
                     });
         }

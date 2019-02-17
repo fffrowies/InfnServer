@@ -32,7 +32,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Place Order"
+        android:text="@string/place_order"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/fab"

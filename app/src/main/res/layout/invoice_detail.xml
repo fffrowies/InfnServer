@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical|start"
-                android:text="Description"
+                android:text="@string/description"
                 android:textSize="18sp"
                 android:textAllCaps="true"
                 android:textStyle="bold" />
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical|start"
-                android:text="Amount"
+                android:text="@string/amount"
                 android:textSize="18sp"
                 android:textAllCaps="true"
                 android:textStyle="italic" />

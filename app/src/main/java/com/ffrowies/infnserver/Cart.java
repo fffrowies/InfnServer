@@ -91,7 +91,7 @@ public class Cart extends AppCompatActivity {
                 if (cart.size() > 0)
                     registerInvoice();
                 else
-                    Toast.makeText(Cart.this, "Your cart is empty!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Cart.this, getString(R.string.your_cart_is_empty) + "!!!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -115,14 +115,14 @@ public class Cart extends AppCompatActivity {
         invoices.child(String.valueOf(System.currentTimeMillis())).setValue(invoice);
         //Delete cart
         new Database(getBaseContext()).cleanCart();
-        Toast.makeText(Cart.this, "Thank you, placed.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(Cart.this, getString(R.string.thank_you), Toast.LENGTH_SHORT).show();
         finish();
     }
 
     private void addCartItem() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(Cart.this);
-        alertDialog.setTitle("Product | Service");
-        alertDialog.setMessage("Please fill full information");
+        alertDialog.setTitle(getString(R.string.product_service));
+        alertDialog.setMessage(getString(R.string.please_fill_full_info));
 
         LayoutInflater inflater = this.getLayoutInflater();
         View add_item_layout = inflater.inflate(R.layout.add_new_item, null);
@@ -134,7 +134,7 @@ public class Cart extends AppCompatActivity {
         alertDialog.setIcon(R.drawable.ic_add_shopping_cart_black_24dp);
 
         //Set button
-        alertDialog.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(getString(R.string.add).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!edtDescription.getText().toString().isEmpty() && !edtAmount.getText().toString().isEmpty())
@@ -149,7 +149,7 @@ public class Cart extends AppCompatActivity {
                 }
             }
         });
-        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getString(R.string.cancel).toUpperCase(), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

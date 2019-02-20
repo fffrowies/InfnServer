@@ -12,8 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.ffrowies.infnserver.Adapter.UserAdapter;
-import com.ffrowies.infnserver.Models.User;
+import com.ffrowies.infnserver.Adapter.InvoicesAdapter;
+import com.ffrowies.infnserver.Models.Invoice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,7 +29,7 @@ public class InvoicesList extends AppCompatActivity {
 
     final int ITEM_LOAD_COUNT = 21;
     int totalItem = 0, lastVisibleItem;
-    UserAdapter adapter;
+    InvoicesAdapter adapter;
     boolean isLoading = false, isMaxData = false;
 
     String lastNode = "", lastKey = "";
@@ -50,7 +50,7 @@ public class InvoicesList extends AppCompatActivity {
             adapter.removeLastItem();
             adapter.notifyDataSetChanged();
             getLastKeyFromFirebase();
-            getUsers();
+            getInvoices();
         }
 
         return true;
@@ -61,7 +61,7 @@ public class InvoicesList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoices_list);
 
-        recyclerView = (RecyclerView) findViewById(R.id.userRecyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.invoicesRecyclerView);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -75,10 +75,10 @@ public class InvoicesList extends AppCompatActivity {
                 new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        adapter = new UserAdapter(this);
+        adapter = new InvoicesAdapter(this);
         recyclerView.setAdapter(adapter);
 
-        getUsers();
+        getInvoices();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -90,7 +90,7 @@ public class InvoicesList extends AppCompatActivity {
 
                 if (!isLoading && totalItem <= (lastVisibleItem + ITEM_LOAD_COUNT))
                 {
-                    getUsers();
+                    getInvoices();
                     isLoading = true;
                 }
             }
@@ -98,18 +98,18 @@ public class InvoicesList extends AppCompatActivity {
 
     }
 
-    private void getUsers() {
+    private void getInvoices() {
         if (!isMaxData)
         {
             Query query;
             if (TextUtils.isEmpty(lastNode))
                 query = FirebaseDatabase.getInstance().getReference()
-                        .child("Users")
+                        .child("Invoices")
                         .orderByKey()
                         .limitToFirst(ITEM_LOAD_COUNT);
             else
                 query = FirebaseDatabase.getInstance().getReference()
-                        .child("Users")
+                        .child("Invoices")
                         .orderByKey()
                         .startAt(lastNode)
                         .limitToFirst(ITEM_LOAD_COUNT);
@@ -119,20 +119,20 @@ public class InvoicesList extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.hasChildren())
                     {
-                        List<User> newUsers = new ArrayList<>();
-                        for (DataSnapshot userSnapshot : dataSnapshot.getChildren())
+                        List<Invoice> newInvoices = new ArrayList<>();
+                        for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren())
                         {
-                            newUsers.add(userSnapshot.getValue(User.class));
+                            newInvoices.add(invoiceSnapshot.getValue(Invoice.class));
                         }
 
-                        lastNode = newUsers.get(newUsers.size() - 1).getId();
+                        lastNode = newInvoices.get(newInvoices.size() - 1).getDate();
 
                         if (!lastNode.equals(lastKey))
-                            newUsers.remove(newUsers.size() - 1);
+                            newInvoices.remove(newInvoices.size() - 1);
                         else
                             lastNode = "end";   //Fix error infinity load final item
 
-                        adapter.addAll(newUsers);
+                        adapter.addAll(newInvoices);
                         isLoading = false;
                     }
                     else
@@ -152,7 +152,7 @@ public class InvoicesList extends AppCompatActivity {
 
     private void getLastKeyFromFirebase() {
         Query getLastKey = FirebaseDatabase.getInstance().getReference()
-                .child("Users")
+                .child("Invoices")
                 .orderByKey()
                 .limitToLast(1);
 

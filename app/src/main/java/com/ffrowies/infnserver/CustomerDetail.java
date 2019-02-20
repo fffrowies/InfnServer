@@ -133,29 +133,29 @@ public class CustomerDetail extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Account
-                loadInvoicesList();
-//
-//                Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
-//                intentCart.putExtra("CustomerId", customerId);
-//                startActivity(intentCart);
+//                loadInvoicesList();
+
+                Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
+//                intentInvoicesList.putExtra("CustomerId", customerId);
+                startActivity(intentInvoicesList);
             }
         });
 
         //Create horizontal menu
         initMenu();
-        loadInvoicesList();
+//        loadInvoicesList();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        loadInvoicesList();
+//        loadInvoicesList();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadInvoicesList();
+//        loadInvoicesList();
     }
 
     private void initMenu() {

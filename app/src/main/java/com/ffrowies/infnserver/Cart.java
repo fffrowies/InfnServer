@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -105,9 +106,12 @@ public class Cart extends AppCompatActivity {
         //Using System.CurrentMilli to key and date
         String currentSystemTime = String.valueOf(System.currentTimeMillis());
 
+        String dateString = DateFormat.format("dd/MM/yyyy", new Date(System.currentTimeMillis())).toString();
+
         Invoice invoice = new Invoice(
                 customerId,
                 currentSystemTime,
+                dateString,
                 txvTotalPrice.getText().toString(),
                 cart
         );
@@ -132,7 +136,7 @@ public class Cart extends AppCompatActivity {
         edtAmount = (MaterialEditText) add_item_layout.findViewById(R.id.edtAmount);
 
         alertDialog.setView(add_item_layout);
-        alertDialog.setIcon(R.drawable.ic_add_shopping_cart_black_24dp);
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
 
         //Set button
         alertDialog.setPositiveButton(getString(R.string.add).toUpperCase(), new DialogInterface.OnClickListener() {

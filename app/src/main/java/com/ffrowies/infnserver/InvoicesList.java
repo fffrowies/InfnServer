@@ -6,10 +6,9 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+
+import android.view.View;
 import android.widget.Toast;
 
 import com.ffrowies.infnserver.Adapter.InvoicesAdapter;
@@ -36,37 +35,11 @@ public class InvoicesList extends AppCompatActivity {
     String lastNode = "", lastNodeIn = "0", lastNodeOut = "0", lastKey = "", customerId;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.itemRefresh)
-        {
-            isMaxData = false;
-            lastNode = adapter.getLastItemId();
-            adapter.removeLastItem();
-            adapter.notifyDataSetChanged();
-            getLastKeyFromFirebase();
-            getInvoices();
-        }
-
-        return true;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoices_list);
 
         recyclerView = (RecyclerView) findViewById(R.id.invoicesRecyclerView);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle("Firebase Recycler Pagination");
 
         //Get customer Id from Intent
         if (getIntent() != null) {
@@ -101,6 +74,13 @@ public class InvoicesList extends AppCompatActivity {
                 }
             }
         });
+
+        recyclerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void getInvoices() {
@@ -130,10 +110,10 @@ public class InvoicesList extends AppCompatActivity {
                             if (invoiceSnapshot.getValue(Invoice.class).getCustomerId().equals(customerId))
                             {
                                 newInvoices.add(invoiceSnapshot.getValue(Invoice.class));
-                                lastNodeIn = invoiceSnapshot.getValue(Invoice.class).getDate();
+                                lastNodeIn = invoiceSnapshot.getValue(Invoice.class).getId();
                             }
                             else
-                                lastNodeOut = invoiceSnapshot.getValue(Invoice.class).getDate();
+                                lastNodeOut = invoiceSnapshot.getValue(Invoice.class).getId();
 
                             if (newInvoices.size() == ITEM_VIEW_COUNT)
                                 break;

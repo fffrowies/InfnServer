@@ -58,7 +58,7 @@ public class CustomerDetail extends AppCompatActivity {
     TextView txvCustomerAddress, txvCustomerEmail, txvCustomerPhone;
     ImageView imvCustomer;
     CollapsingToolbarLayout collapsingToolbarLayout;
-    FloatingActionButton btnAccount;
+    FloatingActionButton btnCart;
 
     //Inflated layout (to Update Customer: add_customer_layout)
     MaterialEditText edtName, edtAddress, edtEmail, edtPhone;
@@ -76,11 +76,11 @@ public class CustomerDetail extends AppCompatActivity {
 
     HorizontalScrollMenuView menu;
 
-    DatabaseReference invoiceList;
-    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
-
-    RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
+//    DatabaseReference invoiceList;
+//    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
+//
+//    RecyclerView recyclerView;
+//    RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class CustomerDetail extends AppCompatActivity {
         //Firebase
         db = FirebaseDatabase.getInstance();
         customers = db.getReference("Customers");
-        invoiceList = db.getReference("Invoices");
+//        invoiceList = db.getReference("Invoices");
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
@@ -100,7 +100,7 @@ public class CustomerDetail extends AppCompatActivity {
         txvCustomerPhone = (TextView) findViewById(R.id.txvCustomerPhone);
         imvCustomer = (ImageView) findViewById(R.id.imvCustomer);
 
-        btnAccount = (FloatingActionButton) findViewById(R.id.btnAccount);
+        btnCart = (FloatingActionButton) findViewById(R.id.btnCart);
 
         menu = (HorizontalScrollMenuView) findViewById(R.id.menu);
 
@@ -113,55 +113,39 @@ public class CustomerDetail extends AppCompatActivity {
             customerId = getIntent().getStringExtra("CustomerId");
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
-        recyclerView.setLayoutManager(layoutManager);
-
-        DividerItemDecoration dividerItemDecoration =
-                new DividerItemDecoration(recyclerView.getContext(), 1);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+//        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
+//        recyclerView.setHasFixedSize(true);
+//        layoutManager = new LinearLayoutManager(this);
+//        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
+//        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
+//        recyclerView.setLayoutManager(layoutManager);
+//
+//        DividerItemDecoration dividerItemDecoration =
+//                new DividerItemDecoration(recyclerView.getContext(), 1);
+//        recyclerView.addItemDecoration(dividerItemDecoration);
 
         if (!customerId.isEmpty())
         {
             getDetailCustomer();
         }
 
-        btnAccount.setOnClickListener(new View.OnClickListener() {
+        btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Account
-//                loadInvoicesList();
-
-                Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
-                intentInvoicesList.putExtra("CustomerId", customerId);
-//                intentInvoicesList.putExtra("CustomerKey", currentKey);
-                startActivity(intentInvoicesList);
+                //Cart
+                Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
+                intentCart.putExtra("CustomerId", customerId);
+                startActivity(intentCart);
             }
         });
 
         //Create horizontal menu
         initMenu();
-//        loadInvoicesList();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        loadInvoicesList();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        loadInvoicesList();
     }
 
     private void initMenu() {
         menu.addItem(getString(R.string.customers), R.drawable.ic_contacts_black_24dp);
-        menu.addItem(getString(R.string.cart), R.drawable.ic_shopping_cart_black_24dp);
+        menu.addItem(getString(R.string.account), R.drawable.ic_attach_money_black_24dp);
         menu.addItem("Whatsapp", R.drawable.ic_iconfinder_whatsapp_115679);
         menu.addItem(getString(R.string.call), R.drawable.ic_phone_black_24dp);
         menu.addItem("SMS", R.drawable.ic_sms_black_24dp);
@@ -183,10 +167,10 @@ public class CustomerDetail extends AppCompatActivity {
                         startActivity(new Intent(CustomerDetail.this, CustomersList.class));
                         break;
                     case 1:
-                        //Cart
-                        Intent intentCart = new Intent(CustomerDetail.this, Cart.class);
-                        intentCart.putExtra("CustomerId", customerId);
-                        startActivity(intentCart);
+                        //Account
+                        Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
+                        intentInvoicesList.putExtra("CustomerId", customerId);
+                        startActivity(intentInvoicesList);
                         break;
                     case 2:
                         //TODO (test Whatsapp)
@@ -404,40 +388,40 @@ public class CustomerDetail extends AppCompatActivity {
         }
     }
 
-    private void loadInvoicesList() {
-        adapter = new FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder>(
-                Invoice.class,
-                R.layout.layout_invoice_item,
-                InvoiceViewHolder.class,
-                invoiceList.orderByChild("customerId").equalTo(customerId)
-        ) {
-            @Override
-            protected void populateViewHolder(InvoiceViewHolder viewHolder, Invoice model, int position) {
-                String longValueDate = model.getDate();
-                long millisecond = Long.parseLong(longValueDate);
-                String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
-                viewHolder.txvDate.setText(dateString);
-                viewHolder.txvTotal.setText(model.getTotal());
-
-                if (position % 2 != 0) {
-                    viewHolder.txvDate.setTextColor(Color.parseColor("#8B000000"));
-                    viewHolder.txvTotal.setTextColor(Color.parseColor("#8B000000"));
-                }
-
-                final Invoice local = model;
-                viewHolder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void onClick(View view, int position, boolean isLongClick) {
-                        Intent invoiceDetailIntent = new Intent(CustomerDetail.this, InvoiceDetail.class);
-                        Common.currentInvoice = local;
-                        invoiceDetailIntent.putExtra("InvoiceId", adapter.getRef(position).getKey());
-                        invoiceDetailIntent.putExtra("CustomerName", currentCustomer.getName());
-                        startActivity(invoiceDetailIntent);
-                    }
-                });
-            }
-        };
-        adapter.notifyDataSetChanged();
-        recyclerView.setAdapter(adapter);
-    }
+//    private void loadInvoicesList() {
+//        adapter = new FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder>(
+//                Invoice.class,
+//                R.layout.layout_invoice_item,
+//                InvoiceViewHolder.class,
+//                invoiceList.orderByChild("customerId").equalTo(customerId)
+//        ) {
+//            @Override
+//            protected void populateViewHolder(InvoiceViewHolder viewHolder, Invoice model, int position) {
+//                String longValueDate = model.getDate();
+//                long millisecond = Long.parseLong(longValueDate);
+//                String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
+//                viewHolder.txvDate.setText(dateString);
+//                viewHolder.txvTotal.setText(model.getTotal());
+//
+//                if (position % 2 != 0) {
+//                    viewHolder.txvDate.setTextColor(Color.parseColor("#8B000000"));
+//                    viewHolder.txvTotal.setTextColor(Color.parseColor("#8B000000"));
+//                }
+//
+//                final Invoice local = model;
+//                viewHolder.setItemClickListener(new ItemClickListener() {
+//                    @Override
+//                    public void onClick(View view, int position, boolean isLongClick) {
+//                        Intent invoiceDetailIntent = new Intent(CustomerDetail.this, InvoiceDetail.class);
+//                        Common.currentInvoice = local;
+//                        invoiceDetailIntent.putExtra("InvoiceId", adapter.getRef(position).getKey());
+//                        invoiceDetailIntent.putExtra("CustomerName", currentCustomer.getName());
+//                        startActivity(invoiceDetailIntent);
+//                    }
+//                });
+//            }
+//        };
+//        adapter.notifyDataSetChanged();
+//        recyclerView.setAdapter(adapter);
+//    }
 }

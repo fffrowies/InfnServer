@@ -136,7 +136,8 @@ public class CustomerDetail extends AppCompatActivity {
 //                loadInvoicesList();
 
                 Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
-//                intentInvoicesList.putExtra("CustomerId", customerId);
+                intentInvoicesList.putExtra("CustomerId", customerId);
+//                intentInvoicesList.putExtra("CustomerKey", currentKey);
                 startActivity(intentInvoicesList);
             }
         });

@@ -102,17 +102,18 @@ public class Cart extends AppCompatActivity {
 
     private void registerInvoice() {
 
+        //Using System.CurrentMilli to key and date
+        String currentSystemTime = String.valueOf(System.currentTimeMillis());
 
         Invoice invoice = new Invoice(
                 customerId,
-                Long.toString(date.getTime()),
+                currentSystemTime,
                 txvTotalPrice.getText().toString(),
                 cart
         );
 
         //Submit to Firebase
-        //Using System.CurrentMilli to key
-        invoices.child(String.valueOf(System.currentTimeMillis())).setValue(invoice);
+        invoices.child(currentSystemTime).setValue(invoice);
         //Delete cart
         new Database(getBaseContext()).cleanCart();
         Toast.makeText(Cart.this, getString(R.string.thank_you), Toast.LENGTH_SHORT).show();

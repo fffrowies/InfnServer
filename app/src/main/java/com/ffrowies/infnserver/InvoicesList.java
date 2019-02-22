@@ -27,12 +27,13 @@ public class InvoicesList extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
-    final int ITEM_LOAD_COUNT = 21;
+    final int ITEM_LOAD_COUNT = 24;
+    final int ITEM_VIEW_COUNT = 16;         //aprox fill screen
     int totalItem = 0, lastVisibleItem;
     InvoicesAdapter adapter;
     boolean isLoading = false, isMaxData = false;
 
-    String lastNode = "", lastKey = "";
+    String lastNode = "", lastNodeIn = "0", lastNodeOut = "0", lastKey = "", customerId;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,6 +68,11 @@ public class InvoicesList extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle("Firebase Recycler Pagination");
 
+        //Get customer Id from Intent
+        if (getIntent() != null) {
+            customerId = getIntent().getStringExtra("CustomerId");
+        }
+
         getLastKeyFromFirebase();
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -95,17 +101,18 @@ public class InvoicesList extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void getInvoices() {
         if (!isMaxData)
         {
             Query query;
+
             if (TextUtils.isEmpty(lastNode))
                 query = FirebaseDatabase.getInstance().getReference()
                         .child("Invoices")
-                        .orderByKey()
+                        .orderByChild("customerId")
+                        .equalTo(customerId)
                         .limitToFirst(ITEM_LOAD_COUNT);
             else
                 query = FirebaseDatabase.getInstance().getReference()
@@ -117,22 +124,39 @@ public class InvoicesList extends AppCompatActivity {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChildren())
-                    {
+                    if (dataSnapshot.hasChildren()) {
                         List<Invoice> newInvoices = new ArrayList<>();
-                        for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren())
-                        {
-                            newInvoices.add(invoiceSnapshot.getValue(Invoice.class));
+                        for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+                            if (invoiceSnapshot.getValue(Invoice.class).getCustomerId().equals(customerId))
+                            {
+                                newInvoices.add(invoiceSnapshot.getValue(Invoice.class));
+                                lastNodeIn = invoiceSnapshot.getValue(Invoice.class).getDate();
+                            }
+                            else
+                                lastNodeOut = invoiceSnapshot.getValue(Invoice.class).getDate();
+
+                            if (newInvoices.size() == ITEM_VIEW_COUNT)
+                                break;
                         }
 
-                        lastNode = newInvoices.get(newInvoices.size() - 1).getDate();
 
-                        if (!lastNode.equals(lastKey))
-                            newInvoices.remove(newInvoices.size() - 1);
+                        if (!newInvoices.isEmpty()) {
+                            if (lastNodeIn.equals(lastKey))
+                                lastNode = "end";   //Fix error infinity load final item
+                            else {
+                                if (Long.parseLong(lastNodeIn) > Long.parseLong(lastNodeOut))
+                                    lastNode = lastNodeIn;
+                                else
+                                    lastNode = lastNodeOut;
+
+                                newInvoices.remove(newInvoices.size() - 1);
+                            }
+
+                            adapter.addAll(newInvoices);
+                        }
                         else
-                            lastNode = "end";   //Fix error infinity load final item
+                            lastNode = lastNodeOut;
 
-                        adapter.addAll(newInvoices);
                         isLoading = false;
                     }
                     else
@@ -151,16 +175,19 @@ public class InvoicesList extends AppCompatActivity {
     }
 
     private void getLastKeyFromFirebase() {
+
         Query getLastKey = FirebaseDatabase.getInstance().getReference()
                 .child("Invoices")
-                .orderByKey()
+                .orderByChild("customerId")
+                .equalTo(customerId)
                 .limitToLast(1);
 
         getLastKey.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot lastKeySnapshot : dataSnapshot.getChildren())
+                for (DataSnapshot lastKeySnapshot : dataSnapshot.getChildren()) {
                     lastKey = lastKeySnapshot.getKey();
+                }
             }
 
             @Override

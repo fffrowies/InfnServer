@@ -1,13 +1,17 @@
 package com.ffrowies.infnserver;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.ffrowies.infnserver.Models.Invoice;
 import com.ffrowies.infnserver.Utils.Common;
 import com.ffrowies.infnserver.ViewHolder.InvoiceDetailAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -20,10 +24,15 @@ import java.util.Date;
 
 public class InvoiceDetail extends AppCompatActivity {
 
+    private static final String TAG = "InvoiceDetail";
+
     TextView txvCustomerName, txvInvoiceDate, txvInvoiceTotal;
-    String invoiceIdValue = "", invoiceKey = "";
+    String invoiceIdValue = "";
     RecyclerView lstInvoiceDetail;
     RecyclerView.LayoutManager layoutManager;
+    Invoice currentInvoice;
+
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,22 +48,37 @@ public class InvoiceDetail extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         lstInvoiceDetail.setLayoutManager(layoutManager);
 
-        if (getIntent() != null)
-            invoiceIdValue = getIntent().getStringExtra("InvoiceId");
+        final ProgressDialog mDialog = new ProgressDialog(InvoiceDetail.this);
+        mDialog.setMessage("Please waiting...");
+        mDialog.show();
 
-        getInvoiceKeyFromFirebase();
+        if (getIntent() != null) {
+            invoiceIdValue = getIntent().getStringExtra("InvoiceId");
+        }
+
+        getInvoiceDataFromFirebase();
 
         txvCustomerName.setText(Common.currentCustomer.getName());
-        txvInvoiceDate.setText(invoiceKey.getDate());
-        txvInvoiceTotal.setText(Common.currentInvoice.getTotal());
 
-        InvoiceDetailAdapter adapter = new InvoiceDetailAdapter(Common.currentInvoice.getItems());
-        adapter.notifyDataSetChanged();
-        lstInvoiceDetail.setAdapter(adapter);
+        if (currentInvoice == null) {
+            handler = new Handler();
+            Runnable r = new Runnable() {
+                public void run() {
+                    mDialog.dismiss();
 
+                    txvInvoiceDate.setText(currentInvoice.getDate());
+                    txvInvoiceTotal.setText(currentInvoice.getTotal());
+
+                    InvoiceDetailAdapter adapter = new InvoiceDetailAdapter(currentInvoice.getItems());
+                    adapter.notifyDataSetChanged();
+                    lstInvoiceDetail.setAdapter(adapter);
+                }
+            };
+            handler.postDelayed(r,3000);
+        }
     }
 
-    private void getInvoiceKeyFromFirebase() {
+    private void getInvoiceDataFromFirebase() {
         Query getKey = FirebaseDatabase.getInstance().getReference()
                 .child("Invoices")
                 .orderByChild("id")
@@ -64,7 +88,7 @@ public class InvoiceDetail extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
-                    invoiceKey = invoiceSnapshot.getKey();
+                    currentInvoice = invoiceSnapshot.getValue(Invoice.class);
                 }
             }
 

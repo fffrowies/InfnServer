@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ffrowies.infnserver.Utils.Common;
@@ -34,17 +36,18 @@ public class InvoicesList extends AppCompatActivity {
 
     String lastNode = "", lastNodeIn = "0", lastNodeOut = "0", lastKey = "", customerId;
 
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoices_list);
 
         recyclerView = (RecyclerView) findViewById(R.id.invoicesRecyclerView);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        //Get customer Id from Intent
-//        if (getIntent() != null) {
-//            customerId = getIntent().getStringExtra("CustomerId");
-//        }
+        toolbar.setTitle(Common.currentCustomer.getName().toUpperCase());
+
         customerId = Common.currentCustomer.getId();
 
         getLastKeyFromFirebase();

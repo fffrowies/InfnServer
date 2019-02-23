@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.TextView;
@@ -24,12 +25,11 @@ import java.util.Date;
 
 public class InvoiceDetail extends AppCompatActivity {
 
-    private static final String TAG = "InvoiceDetail";
-
-    TextView txvCustomerName, txvInvoiceDate, txvInvoiceTotal;
+    TextView txvInvoiceDate, txvInvoiceTotal;
     String invoiceIdValue = "";
     RecyclerView lstInvoiceDetail;
     RecyclerView.LayoutManager layoutManager;
+    Toolbar toolbar;
     Invoice currentInvoice;
 
     Handler handler;
@@ -39,9 +39,12 @@ public class InvoiceDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice_detail);
 
-        txvCustomerName = (TextView) findViewById(R.id.txvCustomerName);
         txvInvoiceDate = (TextView) findViewById(R.id.txvInvoiceDate);
         txvInvoiceTotal = (TextView) findViewById(R.id.txvInvoiceTotal);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setTitle(Common.currentCustomer.getName().toUpperCase());
 
         lstInvoiceDetail = (RecyclerView) findViewById(R.id.lstInvoiceDetail);
         lstInvoiceDetail.setHasFixedSize(true);
@@ -57,8 +60,6 @@ public class InvoiceDetail extends AppCompatActivity {
         }
 
         getInvoiceDataFromFirebase();
-
-        txvCustomerName.setText(Common.currentCustomer.getName());
 
         if (currentInvoice == null) {
             handler = new Handler();

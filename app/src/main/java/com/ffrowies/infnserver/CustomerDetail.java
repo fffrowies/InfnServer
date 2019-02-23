@@ -3,7 +3,6 @@ package com.ffrowies.infnserver;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,10 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,12 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.darwindeveloper.horizontalscrollmenulibrary.custom_views.HorizontalScrollMenuView;
-import com.ffrowies.infnserver.Interface.ItemClickListener;
 import com.ffrowies.infnserver.Models.Customers;
-import com.ffrowies.infnserver.Models.Invoice;
 import com.ffrowies.infnserver.Utils.Common;
-import com.ffrowies.infnserver.ViewHolder.InvoiceViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -47,8 +38,9 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.WordUtils;
 
-import java.util.Date;
 import java.util.UUID;
+
+import static com.ffrowies.infnserver.Utils.Common.currentCustomer;
 
 public class CustomerDetail extends AppCompatActivity {
 
@@ -70,17 +62,10 @@ public class CustomerDetail extends AppCompatActivity {
     StorageReference storageReference;
     
     String customerId, currentKey;
-    Customers currentCustomer;
 
     Uri saveUri;
 
     HorizontalScrollMenuView menu;
-
-//    DatabaseReference invoiceList;
-//    FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder> adapter;
-//
-//    RecyclerView recyclerView;
-//    RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +75,7 @@ public class CustomerDetail extends AppCompatActivity {
         //Firebase
         db = FirebaseDatabase.getInstance();
         customers = db.getReference("Customers");
-//        invoiceList = db.getReference("Invoices");
+
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
@@ -112,17 +97,6 @@ public class CustomerDetail extends AppCompatActivity {
         if (getIntent() != null) {
             customerId = getIntent().getStringExtra("CustomerId");
         }
-
-//        recyclerView = (RecyclerView) findViewById(R.id.recyclerInvoice);
-//        recyclerView.setHasFixedSize(true);
-//        layoutManager = new LinearLayoutManager(this);
-//        ((LinearLayoutManager) layoutManager).setReverseLayout(true);
-//        ((LinearLayoutManager) layoutManager).setStackFromEnd(true);
-//        recyclerView.setLayoutManager(layoutManager);
-//
-//        DividerItemDecoration dividerItemDecoration =
-//                new DividerItemDecoration(recyclerView.getContext(), 1);
-//        recyclerView.addItemDecoration(dividerItemDecoration);
 
         if (!customerId.isEmpty())
         {
@@ -169,7 +143,7 @@ public class CustomerDetail extends AppCompatActivity {
                     case 1:
                         //Account
                         Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
-                        intentInvoicesList.putExtra("CustomerId", customerId);
+//                        intentInvoicesList.putExtra("CustomerId", customerId);
                         startActivity(intentInvoicesList);
                         break;
                     case 2:
@@ -387,41 +361,4 @@ public class CustomerDetail extends AppCompatActivity {
                     });
         }
     }
-
-//    private void loadInvoicesList() {
-//        adapter = new FirebaseRecyclerAdapter<Invoice, InvoiceViewHolder>(
-//                Invoice.class,
-//                R.layout.layout_invoice_item,
-//                InvoiceViewHolder.class,
-//                invoiceList.orderByChild("customerId").equalTo(customerId)
-//        ) {
-//            @Override
-//            protected void populateViewHolder(InvoiceViewHolder viewHolder, Invoice model, int position) {
-//                String longValueDate = model.getDate();
-//                long millisecond = Long.parseLong(longValueDate);
-//                String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
-//                viewHolder.txvDate.setText(dateString);
-//                viewHolder.txvTotal.setText(model.getTotal());
-//
-//                if (position % 2 != 0) {
-//                    viewHolder.txvDate.setTextColor(Color.parseColor("#8B000000"));
-//                    viewHolder.txvTotal.setTextColor(Color.parseColor("#8B000000"));
-//                }
-//
-//                final Invoice local = model;
-//                viewHolder.setItemClickListener(new ItemClickListener() {
-//                    @Override
-//                    public void onClick(View view, int position, boolean isLongClick) {
-//                        Intent invoiceDetailIntent = new Intent(CustomerDetail.this, InvoiceDetail.class);
-//                        Common.currentInvoice = local;
-//                        invoiceDetailIntent.putExtra("InvoiceId", adapter.getRef(position).getKey());
-//                        invoiceDetailIntent.putExtra("CustomerName", currentCustomer.getName());
-//                        startActivity(invoiceDetailIntent);
-//                    }
-//                });
-//            }
-//        };
-//        adapter.notifyDataSetChanged();
-//        recyclerView.setAdapter(adapter);
-//    }
 }

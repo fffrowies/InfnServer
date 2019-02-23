@@ -8,10 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
-import android.view.View;
 import android.widget.Toast;
 
-import com.ffrowies.infnserver.Adapter.InvoicesAdapter;
+import com.ffrowies.infnserver.Utils.Common;
+import com.ffrowies.infnserver.ViewHolder.InvoicesAdapter;
 import com.ffrowies.infnserver.Models.Invoice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,9 +42,10 @@ public class InvoicesList extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.invoicesRecyclerView);
 
         //Get customer Id from Intent
-        if (getIntent() != null) {
-            customerId = getIntent().getStringExtra("CustomerId");
-        }
+//        if (getIntent() != null) {
+//            customerId = getIntent().getStringExtra("CustomerId");
+//        }
+        customerId = Common.currentCustomer.getId();
 
         getLastKeyFromFirebase();
 
@@ -72,13 +73,6 @@ public class InvoicesList extends AppCompatActivity {
                     getInvoices();
                     isLoading = true;
                 }
-            }
-        });
-
-        recyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
     }

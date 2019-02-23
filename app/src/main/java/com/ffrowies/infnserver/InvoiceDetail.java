@@ -1,6 +1,7 @@
 package com.ffrowies.infnserver;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,14 +10,18 @@ import android.widget.TextView;
 
 import com.ffrowies.infnserver.Utils.Common;
 import com.ffrowies.infnserver.ViewHolder.InvoiceDetailAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
 public class InvoiceDetail extends AppCompatActivity {
 
     TextView txvCustomerName, txvInvoiceDate, txvInvoiceTotal;
-    String invoiceIdValue = "";
-    String customerName = "";
+    String invoiceIdValue = "", invoiceKey = "";
     RecyclerView lstInvoiceDetail;
     RecyclerView.LayoutManager layoutManager;
 
@@ -35,21 +40,38 @@ public class InvoiceDetail extends AppCompatActivity {
         lstInvoiceDetail.setLayoutManager(layoutManager);
 
         if (getIntent() != null)
-        {
             invoiceIdValue = getIntent().getStringExtra("InvoiceId");
-            customerName = getIntent().getStringExtra("CustomerName");
-        }
 
-        String longValueDate = Common.currentInvoice.getDate();
-        long millisecond = Long.parseLong(longValueDate);
-        String dateString = DateFormat.format("dd/MM/yyyy", new Date(millisecond)).toString();
-        txvCustomerName.setText(customerName);
-        txvInvoiceDate.setText(dateString);
+        getInvoiceKeyFromFirebase();
+
+        txvCustomerName.setText(Common.currentCustomer.getName());
+        txvInvoiceDate.setText(invoiceKey.getDate());
         txvInvoiceTotal.setText(Common.currentInvoice.getTotal());
 
         InvoiceDetailAdapter adapter = new InvoiceDetailAdapter(Common.currentInvoice.getItems());
         adapter.notifyDataSetChanged();
         lstInvoiceDetail.setAdapter(adapter);
 
+    }
+
+    private void getInvoiceKeyFromFirebase() {
+        Query getKey = FirebaseDatabase.getInstance().getReference()
+                .child("Invoices")
+                .orderByChild("id")
+                .equalTo(invoiceIdValue);
+
+        getKey.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot invoiceSnapshot : dataSnapshot.getChildren()) {
+                    invoiceKey = invoiceSnapshot.getKey();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

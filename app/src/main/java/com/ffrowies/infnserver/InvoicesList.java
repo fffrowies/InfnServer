@@ -44,8 +44,8 @@ public class InvoicesList extends AppCompatActivity {
         setContentView(R.layout.activity_invoices_list);
 
         recyclerView = (RecyclerView) findViewById(R.id.invoicesRecyclerView);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(Common.currentCustomer.getName().toUpperCase());
 
         customerId = Common.currentCustomer.getId();
@@ -54,6 +54,7 @@ public class InvoicesList extends AppCompatActivity {
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
         DividerItemDecoration dividerItemDecoration =
                 new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);

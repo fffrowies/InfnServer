@@ -66,7 +66,7 @@ public class SignIn extends AppCompatActivity {
                             {
                                 Log.d(TAG, "onDataChange: We're In!!!");
 
-                                Intent intent = new Intent(SignIn.this, CustomersList.class);
+                                Intent intent = new Intent(SignIn.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }

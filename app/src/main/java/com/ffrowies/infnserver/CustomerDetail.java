@@ -118,6 +118,8 @@ public class CustomerDetail extends AppCompatActivity {
     }
 
     private void initMenu() {
+        menu.addItem(getString(R.string.home), R.drawable.ic_home_black_24dp);
+        menu.addItem(getString(R.string.exit), R.drawable.ic_exit_to_app_black_24dp);
         menu.addItem(getString(R.string.customers), R.drawable.ic_contacts_black_24dp);
         menu.addItem(getString(R.string.account), R.drawable.ic_attach_money_black_24dp);
         menu.addItem("Whatsapp", R.drawable.ic_iconfinder_whatsapp_115679);
@@ -126,7 +128,6 @@ public class CustomerDetail extends AppCompatActivity {
         menu.addItem("Email", R.drawable.ic_email_black_24dp);
         menu.addItem(getString(R.string.update), R.drawable.ic_person_outline_white_24dp);
         menu.addItem(getString(R.string.delete), R.drawable.ic_delete_black_24dp);
-        menu.addItem(getString(R.string.exit), R.drawable.ic_exit_to_app_black_24dp);
 
         menu.setOnHSMenuClickListener(new HorizontalScrollMenuView.OnHSMenuClickListener() {
             @Override
@@ -137,28 +138,37 @@ public class CustomerDetail extends AppCompatActivity {
                 switch (position)
                 {
                     case 0:
+                        //Home
+                        startActivity(new Intent(CustomerDetail.this, MainActivity.class));
+                        break;
+                    case 1:
+                        //Exit
+                        startActivity(
+                                new Intent(CustomerDetail.this, SignIn.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        break;
+                    case 2:
                         //Customers
                         startActivity(new Intent(CustomerDetail.this, CustomersList.class));
                         break;
-                    case 1:
+                    case 3:
                         //Account
                         Intent intentInvoicesList = new Intent(CustomerDetail.this, InvoicesList.class);
 //                        intentInvoicesList.putExtra("CustomerId", customerId);
                         startActivity(intentInvoicesList);
                         break;
-                    case 2:
+                    case 4:
                         //TODO (test Whatsapp)
                         openWhatsappContact(phone);
                         break;
-                    case 3:
+                    case 5:
                         //Phone Call
                         startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null)));
                         break;
-                    case 4:
+                    case 6:
                         //SMS
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null)));
                         break;
-                    case 5:
+                    case 7:
                         //TODO (test Email)
                         Intent i = new Intent(Intent.ACTION_SEND);
                         i.setType("message/rfc822");
@@ -171,21 +181,17 @@ public class CustomerDetail extends AppCompatActivity {
                             Toast.makeText(CustomerDetail.this, getString(R.string.there_no_email_cli_inst), Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case 6:
+                    case 8:
                         //Update
                         showUpdateCustomerDialog();
                         break;
-                    case 7:
+                    case 9:
                         //Delete
                         deleteCustomer();
                         Intent intentDeleted = new Intent(CustomerDetail.this, CustomersList.class);
                         startActivity(intentDeleted);
                         break;
-                    case 8:
-                        //Exit
-                        startActivity(
-                                new Intent(CustomerDetail.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                        break;
+
                 }
             }
         });

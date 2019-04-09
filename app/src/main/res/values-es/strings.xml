@@ -1,5 +1,5 @@
 <resources>
-    <string name="about_dev">Desarrollo: Fernando Rowies, fernandorowies.saxo@gmail.com 4282-3000 11-5849-8374</string>
+    <string name="about_dev">Desarrollo: Fernando Rowies, fernandorowies.dev@gmail.com 4282-3000 11-5849-8374</string>
     <string name="account">Cuenta</string>
     <string name="add">Agregar</string>
     <string name="add_new_customer">Agregar nuevo cliente</string>
@@ -16,6 +16,7 @@
     <string name="e_mail">E-Mail</string>
     <string name="enter_customer_name">Ingrese nombre de cliente</string>
     <string name="exit">Salir</string>
+    <string name="home">Inicio</string>
     <string name="name">Nombre</string>
     <string name="please_fill_full_info">Por favor complete la información</string>
     <string name="phone">Teléfono</string>

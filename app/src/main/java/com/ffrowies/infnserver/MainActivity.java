@@ -1,6 +1,7 @@
 package com.ffrowies.infnserver;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Groups clicked", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.action_camera:
-                        Toast.makeText(MainActivity.this, "Camera clicked", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(intent, 0);
+
                         break;
                 }
                 return true;
